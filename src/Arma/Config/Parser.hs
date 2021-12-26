@@ -1,15 +1,39 @@
-module Arma.Config.Parser where
+{-|
+Module      : Arma.Config.Parser
+Description : Type for parsing information from config
+-}
+module Arma.Config.Parser 
+    (ConfigPath
+    ,runConfigParser
+    ,ParserError(..)
+    ,Tree(..)
+    ,ConfigParser
+    ,wDefault
+    ,readAttribute
+    ,readArray
+    ,readString
+    ,readSimpleExpression
+    ,readSimpleExpressionArray
+    ,readNumber
+    ,readSubConfig
+    ,onSubConfig
+    ,onSubConfigs
+    ,onSubConfigs'
+    ,userConfigError
+    ,parseSimpleExpression
+    ,readVec2
+    )where
 
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 import Control.Applicative
-import Arma.SimpleExpression
+import qualified Arma.SimpleExpression as SimpleExpression
 import Arma.Config
 import Arma.Value
 import Data.Maybe (fromMaybe)
 
-
+-- | Path to a config position, for example ["cfgVehicles", "fza_ah64d_b2e", "MFD"]
 type ConfigPath = [String]
 
 data ParserState = ParserState {
@@ -24,21 +48,25 @@ initParserState config = ParserState config []
 runConfigParser' :: ConfigParser u a -> ParserState -> Either (ParserError u) a
 runConfigParser' x s = runExcept $ runReaderT (unConfigParser x) s
 
+-- | Runs a defined config parser against a given input config
 runConfigParser :: ConfigParser u a -> Config -> Either (ParserError u) a
 runConfigParser x s = runConfigParser' x $ initParserState s
 
+-- | Errors that may occur while parsing
 data ParserError u = MissingAttribute ConfigPath
     | IncorrectAttributeType ArmaType ArmaType 
     | MissingSubConfig ConfigPath
     | UserParserError ConfigPath u
-    | SimpleExpressionError SimpleExpressionError 
+    | SimpleExpressionError SimpleExpression.SimpleExpressionError 
     | InvalidVec2 ConfigPath
     | UnknownError
     deriving (Show, Eq)
 
+-- | Tree structure of any input type. Used when parsing multi-level arrays
 data Tree a = Node [Tree a]
     | Leaf a
 
+-- | Base composable config parsing type
 newtype ConfigParser u a = ConfigParser {
     unConfigParser :: ReaderT ParserState (Except (ParserError u)) a
 }
@@ -63,19 +91,24 @@ instance Alternative (ConfigParser u) where
 
     empty = ConfigParser $ lift $ except (Left UnknownError)
 
-wDefault :: Alternative m => a -> m a -> m a
+-- | Returns default value if a parser fails
+wDefault :: Alternative m => a -- ^ Default value
+    -> m a -- ^ Parser that may fail
+    -> m a -- ^ Parser that will return default value rather than fail.
 wDefault def x = fromMaybe def <$> optional x
 
 mustExist' :: ParserError u ->  Maybe a -> ReaderT ParserState (Except (ParserError u)) a
 mustExist' err Nothing = lift $ except $ Left err
 mustExist' _ (Just x) = return x
 
+-- |Reads an Arma property at a given name, doesn't perform any type checks
 readAttribute :: String -> ConfigParser u ArmaValue 
 readAttribute ident = ConfigParser $ do
     state <- ask
     mustExist' (MissingAttribute $ statePath state ++ [ident])
         $ lookup ident (properties $ stateConfig state)
 
+-- |Reads an Arma array from a property. Fails if the value at property is an incorrect type
 readArray :: String -> ConfigParser u [ArmaValue]
 readArray ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
@@ -83,6 +116,7 @@ readArray ident = ConfigParser $ do
         (ArmaArray value) -> return value
         _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeArray (getArmaType rawValue)
 
+-- |Reads an Arma string from a property. Fails if the value at property is an incorrect type
 readString :: String -> ConfigParser u String
 readString ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
@@ -90,16 +124,19 @@ readString ident = ConfigParser $ do
         (ArmaString value) -> return value
         _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeString (getArmaType rawValue)
 
-readSimpleExpression' :: String -> ConfigParser u SimpleExpression 
-readSimpleExpression' str = case parseSimpleExpression str of
+-- |Reads an Arma simple expression from a string. Fails if the simple expression is invalid
+readSimpleExpression :: String -> ConfigParser u SimpleExpression.SimpleExpression 
+readSimpleExpression str = case SimpleExpression.parseSimpleExpression str of
         Left err -> ConfigParser $ lift $ except $ Left $ SimpleExpressionError err
         Right x -> return x
 
-readSimpleExpression :: String -> ConfigParser u SimpleExpression
-readSimpleExpression ident = do
+-- |Reads an Arma simple expression from a property.
+parseSimpleExpression :: String -> ConfigParser u SimpleExpression.SimpleExpression
+parseSimpleExpression ident = do
     str <- readString ident
-    readSimpleExpression' str
+    readSimpleExpression str
 
+-- |Reads an Arma string from a property. Fails if the value at property is an incorrect type
 readNumber :: String -> ConfigParser u ArmaNumber
 readNumber ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
@@ -108,21 +145,24 @@ readNumber ident = ConfigParser $ do
         (ArmaString _) -> return 1 --Todo: Add numeric evaluation
         _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeNumber (getArmaType rawValue)
 
-readSimpleExpressionArray :: String -> ConfigParser u (Tree SimpleExpression)
+-- |Reads an Arma simple expression from a property.
+readSimpleExpressionArray :: String -> ConfigParser u (Tree SimpleExpression.SimpleExpression)
 readSimpleExpressionArray ident = ConfigParser $ do
     arr <- unConfigParser (readArray ident)
     unConfigParser $ Node <$> mapM readSimpleExpressionArray' arr
     where
-        readSimpleExpressionArray' (ArmaNumber num) = return $ Leaf (NumLit num)
-        readSimpleExpressionArray' (ArmaString str) = Leaf <$> readSimpleExpression' str
+        readSimpleExpressionArray' (ArmaNumber num) = return $ Leaf (SimpleExpression.NumLit num)
+        readSimpleExpressionArray' (ArmaString str) = Leaf <$> readSimpleExpression str
         readSimpleExpressionArray' (ArmaArray arr) = Node <$> mapM readSimpleExpressionArray' arr
 
+-- | Reads a sub-config's value
 readSubConfig :: String -> ConfigParser u Config
 readSubConfig ident = ConfigParser $ do
     state <- ask
     mustExist' (MissingSubConfig $ statePath state ++ [ident])
         $ lookup ident (subClasses $ stateConfig state)
 
+-- | Performs a given parser on a given sub-config path
 onSubConfig :: String -> ConfigParser u a -> ConfigParser u a
 onSubConfig path parser = ConfigParser $ do
     state <- ask 
@@ -130,23 +170,29 @@ onSubConfig path parser = ConfigParser $ do
     let newState = ParserState subConfig (statePath state ++ [path])
     local (const newState) $ unConfigParser parser
 
+-- | Performs a given parser on all subconfigs, and collates the results.
 onSubConfigs :: ConfigParser u a -> ConfigParser u [a]
-onSubConfigs parser = ConfigParser $ do
-    state <- ask
-    let runSubState (ident, cfg) = local (const $ ParserState cfg (statePath state ++ [ident])) $ unConfigParser parser
-    mapM runSubState $ subClasses $ stateConfig state
+onSubConfigs parser = onSubConfigs' (const parser)
 
+-- | Performs a given parser on all subconfigs, and collates the results.
 onSubConfigs' :: (String -> ConfigParser u a) -> ConfigParser u [a]
 onSubConfigs' parser = ConfigParser $ do
     state <- ask
     let runSubState (ident, cfg) = local (const $ ParserState cfg (statePath state ++ [ident])) $ unConfigParser (parser ident)
     mapM runSubState $ subClasses $ stateConfig state
 
+{-| Throws a user error at the given path (relative to current parser position)
+
+e.g.: if the parser was at ["cfgVehicles", "fza_ah64d_b2e"] and the path to
+userConfigError was ["mfd"], the end path of the error would be 
+["cfgVehicles", "fza_ah64d_b2e", "mfd"]
+-}
 userConfigError :: u -> ConfigPath -> ConfigParser u a
 userConfigError err relPath = ConfigParser $ do
     path <- statePath <$> ask 
     lift $ except $ Left $ UserParserError (path ++ relPath) err
 
+-- | Reads a vector of two numbers from a config.
 readVec2 :: String -> ConfigParser u (ArmaNumber, ArmaNumber)
 readVec2 ident = do
     arr <- readArray ident

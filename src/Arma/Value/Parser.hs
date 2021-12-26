@@ -1,3 +1,8 @@
+
+{-|
+Module      : Arma.Value.Parser
+Description : Parses arma values from arma's `str` function
+-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Arma.Value.Parser(parseArmaValue) where
@@ -15,6 +20,7 @@ import Arma.Value
 tok :: Parsec Void String a -> Parsec Void String a
 tok = lexeme (void $ takeWhileP (Just "space") isSpace)
 
+-- | Parses an arma value from input string
 parseArmaValue :: Parsec Void String ArmaValue
 parseArmaValue = tok $ parseArmaNumber <|> parseArmaString <|> parseArmaArray
 

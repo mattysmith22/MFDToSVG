@@ -1,11 +1,17 @@
-module Arma.MFD.Parser.Bone where
+
+{-|
+Module      : Arma.Config.Parser
+Description : Parses MFD bones from config
+-}
+module Arma.MFD.Parser.Bone (parseBone) where
 
 import Arma.Config.Parser
 import Arma.MFD.Parser.Source
-import Arma.MFD.Parser.Core
+import Arma.MFD.Parser.Types
 import Arma.MFD
 import Data.Char
 
+-- |Parses a single bone at the parser's position
 parseBone :: Parser MFDBone
 parseBone = do
     boneType <- readString "type"

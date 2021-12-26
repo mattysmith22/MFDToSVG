@@ -1,10 +1,16 @@
+
+{-|
+Module      : Arma.MFD.Parser.Source
+Description : Parser for MFD sources
+-}
 module Arma.MFD.Parser.Source where
 
 import Arma.Config.Parser
 import Arma.MFD
 import Data.Char
-import Arma.MFD.Parser.Core
+import Arma.MFD.Parser.Types
 
+-- | Reads a float source from the config
 readFloatSource :: ConfigParser u FloatSource
 readFloatSource = do
     sourceType <- readString "source"
@@ -14,6 +20,7 @@ readFloatSource = do
         typ -> 
             return $ FloatSource typ
 
+-- | Reads a string source from the config
 readStringSource :: ConfigParser u StringSource
 readStringSource = do
     sourceType <- readString "source"
