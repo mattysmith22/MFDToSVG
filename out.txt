@@ -1,0 +1,533 @@
+MFD
+   [0;95;1m{[0m color =
+      [0;96;1m([0m NumLit [0;92;1m0.2[0m[0;96;1m,[0m NumLit [0;92;1m1.0[0m[0;96;1m,[0m NumLit [0;92;1m0.0[0m[0;96;1m,[0m NumLit [0;92;1m1.0[0m [0;96;1m)[0m
+   [0;95;1m,[0m bones =
+      [0;96;1m[[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mNull[0m[0;97;1m"[0m[0;93;1m,[0m Fixed [0;35m([0m [0;92;1m0.0[0m[0;35m,[0m [0;92;1m0.0[0m [0;35m)[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_Horizon[0m[0;97;1m"[0m
+         [0;93;1m,[0m Horizon
+            [0;35m{[0m boneHorizonElevation = - [0;92;1m5.0[0m[0;35m,[0m bonePos0 = [0;36m([0m [0;92;1m0.5[0m[0;36m,[0m [0;92;1m0.5[0m [0;36m)[0m[0;35m,[0m bonePos10 = [0;36m([0m [0;92;1m0.57[0m[0;36m,[0m [0;92;1m0.57[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_RadarAlt[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSource [0;97;1m"[0m[0;94;1maltitudeagl[0m[0;97;1m"[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m200.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m3.28084[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m - [0;92;1m0.5[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_VerticalSpeed[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSource [0;97;1m"[0m[0;94;1mvspeed[0m[0;97;1m"[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m1000.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m1000.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m196.85[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.25[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m - [0;92;1m0.25[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_BankAngle[0m[0;97;1m"[0m
+         [0;93;1m,[0m Rotational
+            [0;35m{[0m boneFloatSource = FloatSource [0;97;1m"[0m[0;94;1mhorizonbank[0m[0;97;1m"[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m180.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m180.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m57.2958[0m
+            [0;35m,[0m boneRotMin = - [0;92;1m180.0[0m
+            [0;35m,[0m boneRotMax = [0;92;1m180.0[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_TurnIndicator[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m10[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m1.5[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m1.5[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.38[0m[0;36m,[0m [0;92;1m0.915[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.62[0m[0;36m,[0m [0;92;1m0.915[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_SlipIndicator[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m11[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m9.5[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m9.5[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.375[0m[0;36m,[0m [0;92;1m0.9525[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.625[0m[0;36m,[0m [0;92;1m0.9525[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_FlyToCueX[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m15[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m - [0;92;1m0.1[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.1[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_FlyToCueY[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m1.1[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m - [0;92;1m0.1[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_FlightPathVectorX[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m17[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m - [0;92;1m0.1[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.1[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_FlightPathVectorY[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m18[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m20.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m1.1[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m - [0;92;1m0.1[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_CommandHeading[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m12[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.25[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.75[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_FCRCenterline[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m13[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.25[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.75[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mFlt_AltSensorBearing[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m14[0m
+            [0;35m,[0m boneSourceMin = - [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m90.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.25[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.75[0m[0;36m,[0m [0;92;1m0.18[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Hyd_Box[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m19[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m1.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m0.26[0m[0;36m,[0m - [0;92;1m0.51[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_1_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m12[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_1_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m12[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_1_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m12[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m999.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_2_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m13[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_2_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m13[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_2_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m13[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m999.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_Limit_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m18[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_Limit_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m18[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m400.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Tgt_Limit_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m18[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m810.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m999.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_1_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m10[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_1_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m10[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_1_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m10[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m130.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_2_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m11[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_2_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m11[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_2_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m11[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m130.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_Limit_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m17[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_Limit_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m17[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m100.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Torque_Limit_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m17[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m115.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m130.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_1_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m14[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_1_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m14[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_1_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m14[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_1_Zone_4[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m14[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m120.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_2_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m15[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_2_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m15[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_2_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m15[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Np_2_Zone_4[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m15[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m120.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Nr_Zone_1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Nr_Zone_2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m95.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m1.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Nr_Zone_3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m1.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Nr_Zone_4[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m105.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mEng_Nr_Zone_5[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m16[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m110.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m120.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m1.0[0m[0;36m,[0m [0;92;1m1.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mTsd_Ownship[0m[0;97;1m"[0m[0;93;1m,[0m Fixed [0;35m([0m [0;92;1m0.5[0m[0;35m,[0m [0;92;1m0.75[0m [0;35m)[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mTsd_DigitSize1[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m27[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m0.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m1.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m2.05[0m e- [0;92;1m2[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mTsd_DigitSize2[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m27[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m1.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m2.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m2.05[0m e- [0;92;1m2[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m
+      [0;96;1m,[0m
+         [0;93;1m([0m [0;97;1m"[0m[0;94;1mTsd_DigitSize3[0m[0;97;1m"[0m
+         [0;93;1m,[0m Linear
+            [0;35m{[0m boneFloatSource = FloatSourceUser [0;92;1m27[0m
+            [0;35m,[0m boneSourceMin = [0;92;1m2.0[0m
+            [0;35m,[0m boneSourceMax = [0;92;1m3.0[0m
+            [0;35m,[0m boneSourceScale = [0;92;1m1.0[0m
+            [0;35m,[0m bonePosMin =
+               [0;36m([0m [0;92;1m0.0[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m
+            [0;35m,[0m bonePosMax =
+               [0;36m([0m [0;92;1m2.05[0m e- [0;92;1m2[0m[0;36m,[0m [0;92;1m0.0[0m [0;36m)[0m [0;35m}[0m [0;93;1m)[0m [0;96;1m][0m
+   [0;95;1m,[0m draw = MFDElementGroup
+      [0;96;1m{[0m mfdElementChildren = [0;93;1m[[0m[0;93;1m][0m
+      [0;96;1m,[0m mfdElementColor = Nothing
+      [0;96;1m,[0m mfdElementAlpha = Nothing
+      [0;96;1m,[0m mfdElementClip = Nothing
+      [0;96;1m,[0m mfdElementCondition = Nothing [0;96;1m}[0m [0;95;1m}[0m
