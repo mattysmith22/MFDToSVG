@@ -22,6 +22,7 @@ module Arma.Config.Parser
     ,userConfigError
     ,parseSimpleExpression
     ,readVec2
+    ,castNumber
     )where
 
 import Control.Monad.Trans.Class
@@ -54,7 +55,7 @@ runConfigParser x s = runConfigParser' x $ initParserState s
 
 -- | Errors that may occur while parsing
 data ParserError u = MissingAttribute ConfigPath
-    | IncorrectAttributeType ArmaType ArmaType 
+    | IncorrectAttributeType ConfigPath ArmaType ArmaType 
     | MissingSubConfig ConfigPath
     | UserParserError ConfigPath u
     | SimpleExpressionError SimpleExpression.SimpleExpressionError 
@@ -101,6 +102,9 @@ mustExist' :: ParserError u ->  Maybe a -> ReaderT ParserState (Except (ParserEr
 mustExist' err Nothing = lift $ except $ Left err
 mustExist' _ (Just x) = return x
 
+configPath :: ConfigParser u ConfigPath
+configPath = ConfigParser (statePath <$> ask)
+
 -- |Reads an Arma property at a given name, doesn't perform any type checks
 readAttribute :: String -> ConfigParser u ArmaValue 
 readAttribute ident = ConfigParser $ do
@@ -114,15 +118,20 @@ readArray ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
     case rawValue of
         (ArmaArray value) -> return value
-        _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeArray (getArmaType rawValue)
+        _ -> do
+            path <- unConfigParser configPath
+            lift $ except $ Left $ IncorrectAttributeType (path ++ [ident]) ArmaTypeArray (getArmaType rawValue)
 
 -- |Reads an Arma string from a property. Fails if the value at property is an incorrect type
 readString :: String -> ConfigParser u String
 readString ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
     case rawValue of
+        (ArmaNumber value) -> return $ show value
         (ArmaString value) -> return value
-        _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeString (getArmaType rawValue)
+        _ -> do
+            path <- unConfigParser configPath
+            lift $ except $ Left $ IncorrectAttributeType (path ++ [ident]) ArmaTypeString (getArmaType rawValue)
 
 -- |Reads an Arma simple expression from a string. Fails if the simple expression is invalid
 readSimpleExpression :: String -> ConfigParser u SimpleExpression.SimpleExpression 
@@ -143,7 +152,9 @@ readNumber ident = ConfigParser $ do
     case rawValue of
         (ArmaNumber value) -> return value
         (ArmaString _) -> return 1 --Todo: Add numeric evaluation
-        _ -> lift $ except $ Left $ IncorrectAttributeType ArmaTypeNumber (getArmaType rawValue)
+        _ -> do
+            path <- unConfigParser configPath
+            lift $ except $ Left $ IncorrectAttributeType (path ++ [ident]) ArmaTypeNumber (getArmaType rawValue)
 
 -- |Reads an Arma simple expression from a property.
 readSimpleExpressionArray :: String -> ConfigParser u (Tree SimpleExpression.SimpleExpression)
@@ -202,3 +213,10 @@ readVec2 ident = do
         _ ->  ConfigParser $ do
             path <- statePath <$> ask 
             lift $ throwE $ InvalidVec2 (path ++ [ident])
+
+-- | Casts to a number - evaluates if it is a string
+castNumber :: ConfigPath -> ArmaValue -> ConfigParser u ArmaNumber 
+castNumber _ (ArmaNumber n) = return n
+castNumber _ (ArmaString _) = return 1
+castNumber path val = ConfigParser $ do
+      lift $ except $ Left $ IncorrectAttributeType path ArmaTypeNumber (getArmaType val)

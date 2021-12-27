@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 203f1dc36d5f15e9300aa9a772967762835b6fcc0533823de86535ef70db6682
+-- hash: 085c604a428c8e82f77c2ac414531f041d84b90292bfdf6581f5a4b24b4d7be4
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       Arma.MFD
       Arma.MFD.Parser
       Arma.MFD.Parser.Bone
+      Arma.MFD.Parser.Element
       Arma.MFD.Parser.Source
       Arma.MFD.Parser.Types
       Arma.SimpleExpression
@@ -44,6 +45,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , extra
     , megaparsec
     , transformers
   default-language: Haskell2010
@@ -59,6 +61,7 @@ executable MFDtoSVG-exe
       MFDtoSVG
     , base >=4.7 && <5
     , containers
+    , extra
     , megaparsec
     , pretty-simple
     , transformers
@@ -76,6 +79,7 @@ test-suite MFDtoSVG-test
       MFDtoSVG
     , base >=4.7 && <5
     , containers
+    , extra
     , megaparsec
     , transformers
   default-language: Haskell2010

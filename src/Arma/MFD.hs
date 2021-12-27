@@ -98,11 +98,11 @@ data MFDElement = MFDElementLine {
         mfdElementScale :: ArmaNumber,
         mfdElementSource :: StringSource,
         mfdElementSourceScale :: ArmaNumber,
-        mfdElementSourceLength :: ArmaNumber,
-        mfdElementSourcePrecision :: ArmaNumber,
-        mfdElementPos :: Vec2,
-        mfdElementRight :: Vec2,
-        mfdElementDown :: Vec2
+        mfdElementSourceLength :: Maybe ArmaNumber,
+        mfdElementSourcePrecision :: Maybe ArmaNumber,
+        mfdElementTextPos :: MFDPoint,
+        mfdElementTextRight :: MFDPoint,
+        mfdElementTextDown :: MFDPoint
     }
     | MFDElementPolygon {
         mfdElementPoints :: [[MFDPoint]]
