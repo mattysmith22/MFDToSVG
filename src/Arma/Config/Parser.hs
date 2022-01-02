@@ -29,7 +29,8 @@ import Control.Monad.Trans.Class
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 import Control.Applicative
-import qualified Arma.SimpleExpression as SimpleExpression
+import qualified Arma.SimpleExpression as SE
+import qualified Arma.SimpleExpression.Parser as SEP
 import Arma.Config
 import Arma.Value
 import Data.Maybe (fromMaybe)
@@ -58,7 +59,8 @@ data ParserError u = MissingAttribute ConfigPath
     | IncorrectAttributeType ConfigPath ArmaType ArmaType 
     | MissingSubConfig ConfigPath
     | UserParserError ConfigPath u
-    | SimpleExpressionError SimpleExpression.SimpleExpressionError 
+    | SimpleExpressionParseError SEP.Error
+    | SimpleExpressionEvalError SE.EvalError
     | InvalidVec2 ConfigPath
     | UnknownError
     deriving (Show, Eq)
@@ -134,13 +136,21 @@ readString ident = ConfigParser $ do
             lift $ except $ Left $ IncorrectAttributeType (path ++ [ident]) ArmaTypeString (getArmaType rawValue)
 
 -- |Reads an Arma simple expression from a string. Fails if the simple expression is invalid
-readSimpleExpression :: String -> ConfigParser u SimpleExpression.SimpleExpression 
-readSimpleExpression str = case SimpleExpression.parseSimpleExpression str of
-        Left err -> ConfigParser $ lift $ except $ Left $ SimpleExpressionError err
+readSimpleExpression :: String -> ConfigParser u SE.SimpleExpression 
+readSimpleExpression str = case SEP.parseSimpleExpression str of
+        Left err -> ConfigParser $ lift $ except $ Left $ SimpleExpressionParseError err
         Right x -> return x
 
+evalSimpleExpression :: SE.SimpleExpression -> ConfigParser u ArmaNumber
+evalSimpleExpression expr = case SE.evalNoVariables expr of
+        Left err -> ConfigParser $ lift $ except $ Left $ SimpleExpressionEvalError err
+        Right x -> return x
+
+readEvalSimpleExpression :: String -> ConfigParser u ArmaNumber 
+readEvalSimpleExpression str = readSimpleExpression str >>= evalSimpleExpression
+
 -- |Reads an Arma simple expression from a property.
-parseSimpleExpression :: String -> ConfigParser u SimpleExpression.SimpleExpression
+parseSimpleExpression :: String -> ConfigParser u SE.SimpleExpression
 parseSimpleExpression ident = do
     str <- readString ident
     readSimpleExpression str
@@ -151,18 +161,18 @@ readNumber ident = ConfigParser $ do
     rawValue <- unConfigParser (readAttribute ident)
     case rawValue of
         (ArmaNumber value) -> return value
-        (ArmaString _) -> return 1 --Todo: Add numeric evaluation
+        (ArmaString x) -> unConfigParser $ readSimpleExpression x >>= evalSimpleExpression
         _ -> do
             path <- unConfigParser configPath
             lift $ except $ Left $ IncorrectAttributeType (path ++ [ident]) ArmaTypeNumber (getArmaType rawValue)
 
 -- |Reads an Arma simple expression from a property.
-readSimpleExpressionArray :: String -> ConfigParser u (Tree SimpleExpression.SimpleExpression)
+readSimpleExpressionArray :: String -> ConfigParser u (Tree SE.SimpleExpression)
 readSimpleExpressionArray ident = ConfigParser $ do
     arr <- unConfigParser (readArray ident)
     unConfigParser $ Node <$> mapM readSimpleExpressionArray' arr
     where
-        readSimpleExpressionArray' (ArmaNumber num) = return $ Leaf (SimpleExpression.NumLit num)
+        readSimpleExpressionArray' (ArmaNumber num) = return $ Leaf (SE.NumLit num)
         readSimpleExpressionArray' (ArmaString str) = Leaf <$> readSimpleExpression str
         readSimpleExpressionArray' (ArmaArray arr) = Node <$> mapM readSimpleExpressionArray' arr
 
@@ -209,7 +219,16 @@ readVec2 ident = do
     arr <- readArray ident
     case arr of
         [ArmaNumber x, ArmaNumber y] -> return (x,y)
-        [_,_] -> return (1,1)--Todo: Add numeric evaluation
+        [ArmaString x, ArmaNumber y] -> do
+            x' <- readEvalSimpleExpression x
+            return (x',y)
+        [ArmaNumber x, ArmaString y] -> do
+            y' <- readEvalSimpleExpression y
+            return (x,y')
+        [ArmaString x, ArmaString y] -> do
+            x' <- readEvalSimpleExpression x
+            y' <- readEvalSimpleExpression y
+            return (x',y')
         _ ->  ConfigParser $ do
             path <- statePath <$> ask 
             lift $ throwE $ InvalidVec2 (path ++ [ident])

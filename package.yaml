@@ -25,6 +25,7 @@ dependencies:
 - containers
 - transformers
 - extra
+- parser-combinators
 
 library:
   source-dirs: src

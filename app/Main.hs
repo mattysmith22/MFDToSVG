@@ -49,4 +49,4 @@ main = do
     armaVal <- parseIO parseArmaValue raw
     config <- readConfigIO armaVal
     mfdConfig <- parseConfigIO parseMfd config
-    pPrintOpt NoCheckColorTty pPrintOptions mfdConfig
+    pPrintOpt CheckColorTty  pPrintOptions mfdConfig
