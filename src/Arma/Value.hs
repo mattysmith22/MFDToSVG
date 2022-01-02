@@ -2,15 +2,20 @@
 Module      : Arma.Value
 Description : Haskell instance or Arma value
 -}
-module Arma.Value (ArmaNumber(..), ArmaType(..), ArmaValue(..), getArmaType) where
+module Arma.Value
+  ( ArmaNumber(..)
+  , ArmaType(..)
+  , ArmaValue(..)
+  , getArmaType
+  ) where
 
-import qualified Text.Megaparsec as M
-import qualified Text.Megaparsec.Char as MC
-import qualified Text.Megaparsec.Char.Lexer as MCL
-import Data.Text(Text)
+import           Data.Text                      ( Text )
+import qualified Text.Megaparsec               as M
+import qualified Text.Megaparsec.Char          as MC
+import qualified Text.Megaparsec.Char.Lexer    as MCL
 
 -- |Number imported from arma
-type ArmaNumber = Double 
+type ArmaNumber = Double
 
 -- |Type of given arma value
 data ArmaType = ArmaTypeString | ArmaTypeNumber | ArmaTypeArray
@@ -24,6 +29,6 @@ data ArmaValue = ArmaString Text
 
 -- |Returns type of a given arma value
 getArmaType :: ArmaValue -> ArmaType
-getArmaType (ArmaArray _) = ArmaTypeArray
+getArmaType (ArmaArray  _) = ArmaTypeArray
 getArmaType (ArmaString _) = ArmaTypeString
 getArmaType (ArmaNumber _) = ArmaTypeNumber

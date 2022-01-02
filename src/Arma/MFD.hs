@@ -8,20 +8,20 @@ https://community.bistudio.com/wiki/Arma_3:_Multi-Function_Display_(MFD)_config_
 -}
 module Arma.MFD where
 
-import Arma.Value
-import Arma.SimpleExpression
-import Data.Text(Text)
+import           Arma.SimpleExpression
+import           Arma.Value
+import           Data.Text                      ( Text )
 
 -- | A vector of two arma numbers
 type Vec2 = (ArmaNumber, ArmaNumber)
 
 -- | Full MFD representation
-data MFD = MFD {
-    color :: Color,
-    bones :: [(Text, MFDBone)],
-    draw :: MFDElement
-}
-    deriving (Show, Eq)
+data MFD = MFD
+  { color :: Color
+  , bones :: [(Text, MFDBone)]
+  , draw  :: MFDElement
+  }
+  deriving (Show, Eq)
 
 -- | Sum type of all available bones
 data MFDBone = Fixed Vec2
@@ -51,28 +51,31 @@ data MFDBone = Fixed Vec2
 -- | Valid float source
 data FloatSource = FloatSource Text
     | FloatSourceUser Int
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- | Valid string source
 data StringSource = StringSource Text
-    | StringSourceTime Text 
+    | StringSourceTime Text
     | StringSourceUser Int
-    | StringSourceStatic Text
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
+
+newtype BoolSource = BoolSource Text
+    deriving (Show, Eq, Ord)
 
 -- | A point on the MFD, defined as a series of transformations
 type MFDPoint = [MFDPointTransform]
 
 -- | A single transformation to be performed on a point
-data MFDPointTransform = MFDPointTransform {
-    mfdPointTransformBone :: Maybe Text,
-    mfdPointTransformOffset :: Vec2,
-    mfdPointTransformWeight :: ArmaNumber
-}
-    deriving (Show, Eq)
+data MFDPointTransform = MFDPointTransform
+  { mfdPointTransformBone   :: Maybe Text
+  , mfdPointTransformOffset :: Vec2
+  , mfdPointTransformWeight :: ArmaNumber
+  }
+  deriving (Show, Eq)
 
 -- | A single color
-type Color = (SimpleExpression, SimpleExpression, SimpleExpression, SimpleExpression)
+type Color
+  = (SimpleExpression, SimpleExpression, SimpleExpression, SimpleExpression)
 
 -- | Valid line values for (type="line")
 data LineType = LineTypeFull | LineTypeDotted | LineTypeDashed | LineTypeDotDashed
@@ -97,7 +100,7 @@ data MFDElement = MFDElementLine {
     | MFDElementText {
         mfdElementAlign :: TextAlign,
         mfdElementScale :: ArmaNumber,
-        mfdElementSource :: StringSource,
+        mfdElementSource :: Either Text StringSource,
         mfdElementSourceScale :: ArmaNumber,
         mfdElementSourceLength :: Maybe ArmaNumber,
         mfdElementSourcePrecision :: Maybe ArmaNumber,
@@ -108,10 +111,11 @@ data MFDElement = MFDElementLine {
     | MFDElementPolygon {
         mfdElementPoints :: [[MFDPoint]]
     }
-    | MFDElementScale {
+    {-| MFDElementScale {
         mfdElementAlign :: TextAlign,
         mfdElementScale :: ArmaNumber,
         mfdElementNesw :: ScaleModeNESW,
+        mfdElementFloatSource :: FloatSource,
         mfdElementSourceScale :: ArmaNumber,
         mfdElementHorizontal :: Bool,
         mfdElementPos :: Vec2,
@@ -128,7 +132,7 @@ data MFDElement = MFDElementLine {
         mfdElementNumberEach :: Int,
         mfdElementMin :: ArmaNumber,
         mfdElementMax :: ArmaNumber
-    }
+    }-}
     | MFDElementGroup {
         mfdElementChildren :: [MFDElement],
         mfdElementColor :: Maybe Color,

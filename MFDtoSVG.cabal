@@ -35,6 +35,7 @@ library
       Arma.MFD.Parser.Element
       Arma.MFD.Parser.Source
       Arma.MFD.Parser.Types
+      Arma.MFD.Sources
       Arma.SimpleExpression
       Arma.SimpleExpression.Parser
       Arma.Value
