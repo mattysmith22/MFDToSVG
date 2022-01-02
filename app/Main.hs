@@ -9,6 +9,8 @@ import Arma.Config.Parser
 import Arma.MFD.Parser (MFDParserError, parseMfd)
 import Arma.Config (Config, fromArmaValue)
 import Arma.Value
+import Data.Text (Text)
+import qualified Data.Text.IO as TIO
 
 pPrintOptions =OutputOptions {
     outputOptionsIndentAmount = 3,
@@ -20,7 +22,7 @@ pPrintOptions =OutputOptions {
     outputOptionsStringStyle = EscapeNonPrintable
 };
 
-parseIO :: Parsec Void String a -> String -> IO a
+parseIO :: Parsec Void Text a -> Text -> IO a
 parseIO parser input = case result of
         (Left err) -> do
             putStrLn (errorBundlePretty err)
@@ -45,7 +47,7 @@ readConfigIO value = case fromArmaValue value of
 
 main :: IO ()
 main = do
-    raw <- readFile "testMFD.txt"
+    raw <- TIO.readFile "bench/testMFD.txt"
     armaVal <- parseIO parseArmaValue raw
     config <- readConfigIO armaVal
     mfdConfig <- parseConfigIO parseMfd config

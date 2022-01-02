@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2fd2db1aa42b17af16970e2d94d12abd6a9506922eb0accfcfa570806394a71f
+-- hash: e00830e397f95eb8dda33820c6f79b01a3c47f1a2b2ceb8a84e579a2f9e77ec4
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -43,12 +43,14 @@ library
       Paths_MFDtoSVG
   hs-source-dirs:
       src
+  default-extensions: OverloadedStrings
   build-depends:
       base >=4.7 && <5
     , containers
     , extra
     , megaparsec
     , parser-combinators
+    , text
     , transformers
   default-language: Haskell2010
 
@@ -67,6 +69,7 @@ executable MFDtoSVG-exe
     , megaparsec
     , parser-combinators
     , pretty-simple
+    , text
     , transformers
   default-language: Haskell2010
 
@@ -86,6 +89,7 @@ test-suite MFDtoSVG-bench
     , extra
     , megaparsec
     , parser-combinators
+    , text
     , transformers
   default-language: Haskell2010
 
@@ -104,5 +108,6 @@ test-suite MFDtoSVG-test
     , extra
     , megaparsec
     , parser-combinators
+    , text
     , transformers
   default-language: Haskell2010

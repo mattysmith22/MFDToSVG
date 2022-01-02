@@ -10,6 +10,7 @@ module Arma.MFD where
 
 import Arma.Value
 import Arma.SimpleExpression
+import Data.Text(Text)
 
 -- | A vector of two arma numbers
 type Vec2 = (ArmaNumber, ArmaNumber)
@@ -17,7 +18,7 @@ type Vec2 = (ArmaNumber, ArmaNumber)
 -- | Full MFD representation
 data MFD = MFD {
     color :: Color,
-    bones :: [(String, MFDBone)],
+    bones :: [(Text, MFDBone)],
     draw :: MFDElement
 }
     deriving (Show, Eq)
@@ -48,15 +49,15 @@ data MFDBone = Fixed Vec2
     deriving (Show, Eq)
 
 -- | Valid float source
-data FloatSource = FloatSource String 
+data FloatSource = FloatSource Text
     | FloatSourceUser Int
     deriving (Show, Eq)
 
 -- | Valid string source
-data StringSource = StringSource String
-    | StringSourceTime String 
+data StringSource = StringSource Text
+    | StringSourceTime Text 
     | StringSourceUser Int
-    | StringSourceStatic String
+    | StringSourceStatic Text
     deriving (Show, Eq)
 
 -- | A point on the MFD, defined as a series of transformations
@@ -64,7 +65,7 @@ type MFDPoint = [MFDPointTransform]
 
 -- | A single transformation to be performed on a point
 data MFDPointTransform = MFDPointTransform {
-    mfdPointTransformBone :: Maybe String,
+    mfdPointTransformBone :: Maybe Text,
     mfdPointTransformOffset :: Vec2,
     mfdPointTransformWeight :: ArmaNumber
 }

@@ -10,12 +10,13 @@ import Arma.MFD.Parser.Source
 import Arma.MFD.Parser.Types
 import Arma.MFD
 import Data.Char
+import qualified Data.Text as T
 
 -- |Parses a single bone at the parser's position
 parseBone :: Parser MFDBone
 parseBone = do
     boneType <- readString "type"
-    case fmap toLower boneType of
+    case T.toLower boneType of
         "fixed" -> parseFixedBone
         "linear" -> parseLinearBone
         "rotational" -> parseRotationalBone

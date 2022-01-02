@@ -6,8 +6,9 @@ module Arma.SimpleExpression where
 import Text.Megaparsec
 import Arma.Value
 import qualified Data.Map as Map
+import Data.Text(Text)
 
-type Ident = String
+type Ident = Text
 
 data BinOp
     = OpMul

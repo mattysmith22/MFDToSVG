@@ -14,6 +14,8 @@ import Control.Applicative
 import Data.List.Extra
 import Data.Maybe
 import Control.Monad
+import Data.Text(Text)
+import qualified Data.Text as T
 
 -- |Parses a single element at the parser's position
 parseElement :: Parser MFDElement
@@ -43,7 +45,7 @@ parseGroup = do
         mfdElementCondition = condition
     }
 
-readLineType :: String -> Parser LineType
+readLineType :: Text -> Parser LineType
 readLineType ident = do
     number <- wDefault 0 $ readNumber ident
     case number of
@@ -58,21 +60,21 @@ toPointTransform path pointComponents = do
     res <- foldM f ([],Nothing,Nothing) (zip pointComponents [0..])
     case res of
         (points,Nothing,Nothing) -> return points
-        (points,_,_) -> userConfigError InvalidPoint  (path ++ [show (length pointComponents - 1)])
+        (points,_,_) -> userConfigError InvalidPoint  (path ++ [T.pack $ show (length pointComponents - 1)])
     where
         
         f (points,bone,Nothing) (ArmaArray [x,y],i) = do
-            x' <- castNumber (path ++ [show i, "0"]) x
-            y' <- castNumber (path ++ [show i, "1"]) y
+            x' <- castNumber (path ++ [T.pack $ show i, "0"]) x
+            y' <- castNumber (path ++ [T.pack $ show i, "1"]) y
             return (points, bone, Just (x',y'))
         
-        f (_,_,Just _) (ArmaArray [_,_],i)= userConfigError InvalidPoint (path ++ [show i])
-        f (_,_,_) (ArmaArray _,i) = userConfigError InvalidPoint (path ++ [show i])
+        f (_,_,Just _) (ArmaArray [_,_],i)= userConfigError InvalidPoint (path ++ [T.pack $ show i])
+        f (_,_,_) (ArmaArray _,i) = userConfigError InvalidPoint (path ++ [T.pack $ show i])
 
         f (points,Nothing,offset) (ArmaString bone,_) = return (points,Just bone, offset)
-        f (points,Just _,offset) (ArmaString _,i) = userConfigError InvalidPoint (path ++ [show i])
+        f (points,Just _,offset) (ArmaString _,i) = userConfigError InvalidPoint (path ++ [T.pack $ show i])
         
-        f (points,Nothing,Nothing) (ArmaNumber _,i) = userConfigError InvalidPoint (path ++ [show i])
+        f (points,Nothing,Nothing) (ArmaNumber _,i) = userConfigError InvalidPoint (path ++ [T.pack $ show i])
         f (points,mBone,mOffset) (ArmaNumber weight,_) = return (points ++ [MFDPointTransform mBone (fromMaybe (0,0) mOffset) weight], Nothing, Nothing)
 
 parseLine :: Parser MFDElement
@@ -88,8 +90,8 @@ parseLine = do
         mfdElementLineType = lineType
     }
     where
-        readPoint (ArmaArray pointComponents, index) = toPointTransform ["points", show index] pointComponents 
-        readPoint (_, index) = userConfigError InvalidPoint ["points", show index]
+        readPoint (ArmaArray pointComponents, index) = toPointTransform ["points", T.pack $ show index] pointComponents 
+        readPoint (_, index) = userConfigError InvalidPoint ["points", T.pack $ show index]
 
 parsePolygon :: Parser MFDElement
 parsePolygon = do
@@ -98,10 +100,10 @@ parsePolygon = do
     return $ MFDElementPolygon points
     where
         readPoly (ArmaArray points,i) = mapM (readPolyPoint i) (zip points [0..])
-        readPoly (_,i) = userConfigError InvalidPoint ["points", show i]
+        readPoly (_,i) = userConfigError InvalidPoint ["points", T.pack $ show i]
         
-        readPolyPoint polyInd (ArmaArray pointTransforms, pointInd) = toPointTransform ["points", show polyInd, show pointInd] pointTransforms
-        readPolyPoint polyInd (_,pointInd) = userConfigError InvalidPoint ["points", show polyInd, show pointInd]
+        readPolyPoint polyInd (ArmaArray pointTransforms, pointInd) = toPointTransform ["points", T.pack $ show polyInd, T.pack $ show pointInd] pointTransforms
+        readPolyPoint polyInd (_,pointInd) = userConfigError InvalidPoint ["points", T.pack $ show polyInd, T.pack $ show pointInd]
 
 readTextAlign :: Parser TextAlign
 readTextAlign = do

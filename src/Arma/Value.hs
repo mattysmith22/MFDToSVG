@@ -7,6 +7,7 @@ module Arma.Value (ArmaNumber(..), ArmaType(..), ArmaValue(..), getArmaType) whe
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as MCL
+import Data.Text(Text)
 
 -- |Number imported from arma
 type ArmaNumber = Double 
@@ -16,7 +17,7 @@ data ArmaType = ArmaTypeString | ArmaTypeNumber | ArmaTypeArray
     deriving (Show, Eq)
 
 -- |Sum type of all valid arma values
-data ArmaValue = ArmaString String
+data ArmaValue = ArmaString Text
     | ArmaNumber ArmaNumber
     | ArmaArray [ArmaValue]
     deriving (Show, Eq)

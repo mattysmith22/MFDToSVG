@@ -11,9 +11,10 @@ import Arma.Config.Parser
       userConfigError )
 import Arma.MFD
 import Arma.Value (ArmaNumber)
+import Data.Text(Text)
 
 -- | Parses a color from a valid string
-parseColor :: String -> Parser Color
+parseColor :: Text -> Parser Color
 parseColor ident = do
     arr <- readSimpleExpressionArray ident
     case arr of
@@ -21,11 +22,11 @@ parseColor ident = do
         _ -> userConfigError InvalidColor [ident]
 
 -- | Errors that may occur while parsing an MFD
-data MFDParserError = InvalidType String
+data MFDParserError = InvalidType Text
     | InvalidColor
     | InvalidLineType ArmaNumber
     | InvalidPoint
-    | InvalidTextAlign String
+    | InvalidTextAlign Text
     deriving (Eq, Show)
 
 -- | Parser type

@@ -7,11 +7,12 @@ module Arma.Config where
 import Arma.Value
 import Data.Map as Map
 import Data.Map (Map)
+import Data.Text(Text)
 
 -- | Single level of a config
 data Config = Config {
-    properties :: [(String, ArmaValue)],
-    subClasses :: [(String, Config)]
+    properties :: [(Text, ArmaValue)],
+    subClasses :: [(Text, Config)]
 }
     deriving (Show, Eq)
 

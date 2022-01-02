@@ -26,9 +26,11 @@ dependencies:
 - transformers
 - extra
 - parser-combinators
+- text
 
 library:
   source-dirs: src
+  default-extensions: OverloadedStrings
 
 executables:
   MFDtoSVG-exe:
@@ -62,3 +64,5 @@ tests:
     dependencies:
     - MFDtoSVG
     - criterion
+    - megaparsec
+    - text
