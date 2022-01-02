@@ -52,3 +52,13 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - MFDtoSVG
+  MFDtoSVG-bench:
+    main:                Bench.hs
+    source-dirs:         bench
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - MFDtoSVG
+    - criterion
