@@ -42,7 +42,6 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - MFDtoSVG
-    - pretty-simple
 
 tests:
   MFDtoSVG-test:

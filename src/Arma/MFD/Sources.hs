@@ -1,5 +1,6 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Arma.MFD.Sources where
 
 import           Arma.MFD
@@ -8,7 +9,6 @@ import qualified Data.Set                      as Set
 import           Data.Text                      ( Text )
 import qualified Data.Text                     as T
 import qualified Data.Text.Read                as TR
-import           Debug.Trace
 
 boolSources :: Set.Set Text
 boolSources = Set.fromList ["on"]
@@ -76,7 +76,7 @@ mfdElementAddSources MFDElementGroup {..} = \src ->
         Nothing    -> id
 
       addOrDefault mExpr = case mExpr of
-        (Just expr) -> traceShow expr $ simpleExpressionAddSources expr
+        (Just expr) -> simpleExpressionAddSources expr
         Nothing     -> id
   in  foldl (flip mfdElementAddSources) groupSources mfdElementChildren
 
@@ -85,4 +85,4 @@ mfdGetSources :: MFD -> SourceReqs
 mfdGetSources (MFD color bones draw) =
   colorAddSources color
     $ flip (foldl (flip boneAddSources)) (fmap snd bones)
-    $ mfdElementAddSources draw (Set.empty, Set.empty, Set.empty)
+    $ mfdElementAddSources draw mempty 
