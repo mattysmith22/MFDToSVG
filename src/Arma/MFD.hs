@@ -11,9 +11,7 @@ module Arma.MFD where
 import           Arma.SimpleExpression
 import           Arma.Value
 import           Data.Text                      ( Text )
-
--- | A vector of two arma numbers
-type Vec2 = (ArmaNumber, ArmaNumber)
+import           Vec
 
 -- | Full MFD representation
 data MFD = MFD

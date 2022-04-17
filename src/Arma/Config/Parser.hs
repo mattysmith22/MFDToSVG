@@ -27,6 +27,7 @@ module Arma.Config.Parser
 
 import           Arma.Config
 import qualified Arma.SimpleExpression         as SE
+import           Arma.SimpleExpression.Eval
 import qualified Arma.SimpleExpression.Parser  as SEP
 import           Arma.Value
 import           Control.Applicative
@@ -63,7 +64,6 @@ data ParserError u = MissingAttribute ConfigPath
     | MissingSubConfig ConfigPath
     | UserParserError ConfigPath u
     | SimpleExpressionParseError SEP.Error
-    | SimpleExpressionEvalError SE.EvalError
     | InvalidVec2 ConfigPath
     | UnknownError
     deriving (Show, Eq)
@@ -152,15 +152,12 @@ readSimpleExpression str = case SEP.parseSimpleExpression str of
     ConfigParser $ lift $ except $ Left $ SimpleExpressionParseError err
   Right x -> return x
 
-evalSimpleExpression :: SE.SimpleExpression -> ConfigParser u ArmaNumber
-evalSimpleExpression expr = case SE.evalNoVariables expr of
-  Left err ->
-    ConfigParser $ lift $ except $ Left $ SimpleExpressionEvalError err
-  Right x -> return x
+evalSimpleExpressionConf :: SE.SimpleExpression -> ConfigParser u ArmaNumber
+evalSimpleExpressionConf expr = return $ evalSimpleExpression expr mempty
 
 readEvalSimpleExpression :: Text -> ConfigParser u ArmaNumber
 readEvalSimpleExpression str =
-  readSimpleExpression str >>= evalSimpleExpression
+  readSimpleExpression str >>= evalSimpleExpressionConf
 
 -- |Reads an Arma simple expression from a property.
 parseSimpleExpression :: Text -> ConfigParser u SE.SimpleExpression
@@ -175,7 +172,7 @@ readNumber ident = ConfigParser $ do
   case rawValue of
     (ArmaNumber value) -> return value
     (ArmaString x) ->
-      unConfigParser $ readSimpleExpression x >>= evalSimpleExpression
+      unConfigParser $ readSimpleExpression x >>= evalSimpleExpressionConf
     _ -> do
       path <- unConfigParser configPath
       lift $ except $ Left $ IncorrectAttributeType (path ++ [ident])
