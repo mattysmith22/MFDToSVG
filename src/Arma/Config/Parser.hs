@@ -38,6 +38,7 @@ import           Data.Maybe                     ( fromMaybe )
 import           Data.Text                      ( Text )
 import qualified Data.Text                     as T
 import           Text.Megaparsec                ( errorBundlePretty )
+import           Vec
 
 -- | Path to a config position, for example ["cfgVehicles", "fza_ah64d_b2e", "MFD"]
 type ConfigPath = [Text]
@@ -231,21 +232,21 @@ userConfigError err relPath = ConfigParser $ do
   lift $ except $ Left $ UserParserError (path ++ relPath) err
 
 -- | Reads a vector of two numbers from a config.
-readVec2 :: Text -> ConfigParser u (ArmaNumber, ArmaNumber)
+readVec2 :: Text -> ConfigParser u Vec2
 readVec2 ident = do
   arr <- readArray ident
   case arr of
-    [ArmaNumber x, ArmaNumber y] -> return (x, y)
+    [ArmaNumber x, ArmaNumber y] -> return $ V2 x y
     [ArmaString x, ArmaNumber y] -> do
       x' <- readEvalSimpleExpression x
-      return (x', y)
+      return $ V2 x' y
     [ArmaNumber x, ArmaString y] -> do
       y' <- readEvalSimpleExpression y
-      return (x, y')
+      return $ V2 x y'
     [ArmaString x, ArmaString y] -> do
       x' <- readEvalSimpleExpression x
       y' <- readEvalSimpleExpression y
-      return (x', y')
+      return $ V2 x' y'
     _ -> ConfigParser $ do
       path <- statePath <$> ask
       lift $ throwE $ InvalidVec2 (path ++ [ident])

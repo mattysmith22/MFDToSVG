@@ -36,6 +36,7 @@ data MFDBone = Fixed Vec2
         boneSourceMin :: ArmaNumber,
         boneSourceMax :: ArmaNumber,
         boneSourceScale :: ArmaNumber,
+        boneCenter :: Vec2,
         boneRotMin :: ArmaNumber,
         boneRotMax :: ArmaNumber
     }
@@ -121,8 +122,8 @@ data MFDElement = MFDElementLine {
         mfdElementDown :: Vec2,
         mfdElementStep :: ArmaNumber,
         mfdElementStepSize :: ArmaNumber,
-        mfdElementLine :: (ArmaNumber, ArmaNumber),
-        mfdElementLineMajor :: (ArmaNumber, ArmaNumber),
+        mfdElementLine :: Vec2,
+        mfdElementLineMajor :: Vec2,
         mfdElementTop :: ArmaNumber,
         mfdElementBottom :: ArmaNumber,
         mfdElementCenter :: ArmaNumber,

@@ -15,6 +15,7 @@ import           Data.List.Extra
 import           Data.Maybe
 import           Data.Text                      ( Text )
 import qualified Data.Text                     as T
+import           Vec
 
 -- |Parses a single element at the parser's position
 parseElement :: Parser MFDElement
@@ -69,7 +70,7 @@ toPointTransform path pointComponents = do
   f (points, bone, Nothing) (ArmaArray [x, y], i) = do
     x' <- castNumber (path ++ [T.pack $ show i, "0"]) x
     y' <- castNumber (path ++ [T.pack $ show i, "1"]) y
-    return (points, bone, Just (x', y'))
+    return (points, bone, Just $ V2 x' y')
 
   f (_, _, Just _) (ArmaArray [_, _], i) =
     userConfigError InvalidPoint (path ++ [T.pack $ show i])
@@ -84,7 +85,7 @@ toPointTransform path pointComponents = do
   f (points, Nothing, Nothing) (ArmaNumber _, i) =
     userConfigError InvalidPoint (path ++ [T.pack $ show i])
   f (points, mBone, mOffset) (ArmaNumber weight, _) = return
-    ( points ++ [MFDPointTransform mBone (fromMaybe (0, 0) mOffset) weight]
+    ( points ++ [MFDPointTransform mBone (fromMaybe (V2 0 0) mOffset) weight]
     , Nothing
     , Nothing
     )

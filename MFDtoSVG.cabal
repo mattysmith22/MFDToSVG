@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0b56610af14aa2ddf6f022511c3dc8eca9f72804036c49f68b7e2f8a4ae77ff2
+-- hash: 603f987f9ba405b0043f72e58fbeb0dd192d476e9851abd64bb7292acdcc8f79
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -31,6 +31,7 @@ library
       Arma.Config.Parser
       Arma.MFD
       Arma.MFD.Bone
+      Arma.MFD.Draw
       Arma.MFD.Parser
       Arma.MFD.Parser.Bone
       Arma.MFD.Parser.Element
@@ -44,6 +45,7 @@ library
       Arma.SimpleExpression.Parser
       Arma.Value
       Arma.Value.Parser
+      Control.Arrow.Extra
       Vec
   other-modules:
       Paths_MFDtoSVG
@@ -54,6 +56,7 @@ library
       base >=4.7 && <5
     , containers
     , extra
+    , linear
     , megaparsec
     , parser-combinators
     , text
@@ -72,6 +75,7 @@ executable MFDtoSVG-exe
     , base >=4.7 && <5
     , containers
     , extra
+    , linear
     , megaparsec
     , parser-combinators
     , text
@@ -92,6 +96,7 @@ test-suite MFDtoSVG-bench
     , containers
     , criterion
     , extra
+    , linear
     , megaparsec
     , parser-combinators
     , text
@@ -111,6 +116,7 @@ test-suite MFDtoSVG-test
     , base >=4.7 && <5
     , containers
     , extra
+    , linear
     , megaparsec
     , parser-combinators
     , text

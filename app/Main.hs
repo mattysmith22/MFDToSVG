@@ -14,7 +14,8 @@ import qualified Data.Text.IO                  as TIO
 import           Data.Void
 import           System.Exit
 import           Text.Megaparsec
-import           Arma.MFD.Sources.Depends (mfdGetDependencies)
+import           Arma.MFD.Sources.Depends
+import           Arma.MFD.Draw
 
 {-
 pPrintOptions = OutputOptions
@@ -55,6 +56,6 @@ main = do
   armaVal   <- parseIO parseArmaValue raw
   config    <- readConfigIO armaVal
   mfdConfig <- parseConfigIO parseMfd config
-  let sources = mfdGetDependencies mfdConfig
+  let sources = getSourceDependencies $ drawMFD mfdConfig
   putStrLn "Sources"
   print sources

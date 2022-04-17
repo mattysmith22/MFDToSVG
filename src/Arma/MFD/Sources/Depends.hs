@@ -36,6 +36,9 @@ instance Arrow SourceDepArr where
   
   l *** r = SourceDepArr $ runSourceDepArr l . runSourceDepArr r
 
+instance ArrowChoice SourceDepArr where
+  l +++ r = SourceDepArr $ runSourceDepArr l . runSourceDepArr r
+
 instance WithSources SourceDepArr where
   getFloat src = SourceDepArr $ addFloatReq src
   getString src = SourceDepArr $ addStringReq src

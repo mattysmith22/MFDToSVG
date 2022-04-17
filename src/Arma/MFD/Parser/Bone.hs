@@ -52,10 +52,12 @@ parseRotationalBone = do
   sourceScale <- wDefault 1 $ readNumber "sourceScale"
   minAngle    <- readNumber "minAngle"
   maxAngle    <- readNumber "maxAngle"
+  center      <- readVec2 "center"
   return Rotational { boneFloatSource = source
                     , boneSourceMin   = sourceMin
                     , boneSourceMax   = sourceMax
                     , boneSourceScale = sourceScale
+                    , boneCenter      = center
                     , boneRotMin      = minAngle
                     , boneRotMax      = maxAngle
                     }

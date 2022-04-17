@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, Rank2Types, ScopedTypeVariables #-}
+{-# LANGUAGE GADTs, Rank2Types, ScopedTypeVariables, LambdaCase #-}
 module Arma.MFD.Sources.With where
 
 import Control.Arrow
@@ -8,7 +8,7 @@ import Arma.MFD
 import Arma.MFD.Sources.Values
 import Data.Text (Text)
 
-class Arrow a => WithSources a where
+class ArrowChoice a => WithSources a where
     getFloat :: FloatSource -> a b Double 
     getString :: StringSource -> a b Text
     getBool :: BoolSource  -> a b Bool
@@ -28,6 +28,10 @@ instance Arrow SourceArr where
     lArr *** rArr = SourceArr $ \vals (l, r) ->
         (runSourceArr lArr vals l, runSourceArr rArr vals r)
 
+instance ArrowChoice SourceArr where
+    l +++ r = SourceArr $ \vals -> \case
+        (Left lVal) -> Left $ runSourceArr l vals lVal
+        (Right rVal) -> Right $ runSourceArr r vals rVal
 instance WithSources SourceArr where
     getFloat src = SourceArr $ \vals _ -> getFloatValue vals src
     getString src = SourceArr $ \vals _ -> getStringValue vals src
@@ -41,3 +45,13 @@ runWithSource (WithSource arr) vals = runSourceArr arr vals ()
 
 unWithSource :: WithSource a -> (forall arr. WithSources arr => arr () a)
 unWithSource (WithSource arr) = arr
+
+instance Functor WithSource where
+  fmap f x = WithSource $ (arr f .) $ unWithSource x
+
+instance Applicative WithSource where
+    pure x = WithSource $ arr $ const x
+
+    f <*> x = WithSource
+        $ arr (uncurry ($))
+        . (unWithSource f &&& unWithSource x)
