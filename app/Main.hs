@@ -15,7 +15,9 @@ import           Data.Void
 import           System.Exit
 import           Text.Megaparsec
 import           Arma.MFD.Sources.Depends
+import           Arma.MFD.Sources.Values
 import           Arma.MFD.Draw
+import           Data.Yaml
 
 {-
 pPrintOptions = OutputOptions
@@ -50,12 +52,26 @@ readConfigIO value = case fromArmaValue value of
     exitWith (ExitFailure 1)
   (Right x) -> return x
 
+mLog :: Text -> IO ()
+mLog x = TIO.putStrLn $ "[MFDtoSVG] " <> x
+
 main :: IO ()
 main = do
+  mLog "Reading MFD Config from file"
   raw       <- TIO.readFile "bench/testMFD.txt"
+
+  mLog "Parsing arma value from file"
   armaVal   <- parseIO parseArmaValue raw
+
+  mLog "Parsing arma config from arma value"
   config    <- readConfigIO armaVal
+
+  mLog "Parsing MFD config from arma config"
   mfdConfig <- parseConfigIO parseMfd config
-  let sources = getSourceDependencies $ drawMFD mfdConfig
-  putStrLn "Sources"
-  print sources
+
+  mLog "Calculating dependencies"
+  let dependencies = getSourceDependencies $ drawMFD mfdConfig
+  encodeFile "sourcesTemplate.yaml" (defaultValues dependencies)
+
+  _ <- decodeFileThrow "sources.yaml" :: IO SourceValues
+  return ()

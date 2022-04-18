@@ -1,19 +1,25 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, DeriveGeneric #-}
 module Arma.MFD.Sources.Values where
 
+import           Arma.MFD.Sources.Key
 import           Data.Map (Map)
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import           Data.Text (Text)
-
+import           Data.Aeson
 import           Arma.MFD
 import           Data.Maybe (fromMaybe)
+import           GHC.Generics (Generic)
 
 data SourceValues = SourceValues {
     floatValues :: Map FloatSource Double,
     stringValues :: Map StringSource Text,
     boolValues :: Map BoolSource Bool
 }
+    deriving (Show, Ord, Eq, Generic)
 
+instance FromJSON SourceValues
+instance ToJSON SourceValues
 instance Semigroup SourceValues where
     l <> r = SourceValues {
         floatValues = floatValues l <> floatValues r,

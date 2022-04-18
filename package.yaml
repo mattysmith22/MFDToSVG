@@ -28,6 +28,8 @@ dependencies:
 - extra
 - parser-combinators
 - text
+- aeson
+- yaml
 
 library:
   source-dirs: src
@@ -41,8 +43,11 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
+    - -Werror
     dependencies:
     - MFDtoSVG
+    default-extensions: OverloadedStrings
 
 tests:
   MFDtoSVG-test:
