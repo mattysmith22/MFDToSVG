@@ -30,6 +30,7 @@ dependencies:
 - text
 - aeson
 - yaml
+- svg-builder
 
 library:
   source-dirs: src

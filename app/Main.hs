@@ -17,7 +17,12 @@ import           Text.Megaparsec
 import           Arma.MFD.Sources.Depends
 import           Arma.MFD.Sources.Values
 import           Arma.MFD.Draw
+import           Arma.MFD
 import           Data.Yaml
+import Arma.MFD.Sources.With (runWithSource)
+import Graphics.Svg
+import Arma.SimpleExpression (SimpleExpression(NumLit))
+import Linear.V2
 
 {-
 pPrintOptions = OutputOptions
@@ -55,6 +60,14 @@ readConfigIO value = case fromArmaValue value of
 mLog :: Text -> IO ()
 mLog x = TIO.putStrLn $ "[MFDtoSVG] " <> x
 
+demo :: MFD
+demo = MFD {
+  color = (NumLit 1, NumLit 0, NumLit 0, NumLit 1),
+  bones = [],
+  draw = MFDElementLine "" [[p 0.4 0.4, p 0.4 0.6 {-, p 0.6 0.6, p 0.6 0.4, p 0.4 0.4 -}]] 1 LineTypeFull
+}
+  where p x y = [MFDPointTransform Nothing (V2 x y) 1]
+
 main :: IO ()
 main = do
   mLog "Reading MFD Config from file"
@@ -73,5 +86,6 @@ main = do
   let dependencies = getSourceDependencies $ drawMFD mfdConfig
   encodeFile "sourcesTemplate.yaml" (defaultValues dependencies)
 
-  _ <- decodeFileThrow "sources.yaml" :: IO SourceValues
-  return ()
+  sources <- decodeFileThrow "sources.yaml" :: IO SourceValues
+  let mfdSvg = runFresh $ runWithSource (drawMFD mfdConfig) sources
+  renderToFile "out.svg" mfdSvg

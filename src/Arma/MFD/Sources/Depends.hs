@@ -55,5 +55,5 @@ defaultValues (floatDeps, stringDeps, boolDeps) = SourceValues {
     stringValues = toMap stringDeps "",
     boolValues = toMap boolDeps False
 }
-    where
-        toMap deps defVal = Map.fromList $ map (,defVal) $ Set.toList deps
+  where
+      toMap deps defVal = Map.fromList $ map (,defVal) $ Set.toList deps

@@ -18,26 +18,27 @@ import qualified Data.Text                     as T
 import           Vec
 
 -- |Parses a single element at the parser's position
-parseElement :: Parser MFDElement
-parseElement = do
+parseElement :: Text -> Parser MFDElement
+parseElement name = do
   elementType <- wDefault "group" $ readString "type"
   case elementType of
-    "group"     -> parseGroup
-    "line"      -> parseLine
-    "polygon"   -> parsePolygon
-    "text"      -> parseText
+    "group"     -> parseGroup name
+    "line"      -> parseLine name
+    "polygon"   -> parsePolygon name
+    "text"      -> parseText name
     --"scale" -> parseScale TODO: Implement scale
-    invalidType -> return $ MFDElementGroup [] Nothing Nothing Nothing Nothing-- userConfigError (InvalidType invalidType) ["type"] 
+    invalidType -> return $ MFDElementGroup invalidType [] Nothing Nothing Nothing Nothing-- userConfigError (InvalidType invalidType) ["type"] 
 
-parseGroup :: Parser MFDElement
-parseGroup = do
+parseGroup :: Text -> Parser MFDElement
+parseGroup name = do
   color     <- optional $ parseColor "color"
   alpha     <- optional $ parseSimpleExpression "alpha"
   clipTL    <- optional $ readVec2 "clipTL"
   clipBR    <- optional $ readVec2 "clipBR"
   condition <- optional $ parseSimpleExpression "condition"
-  children  <- onSubConfigs parseElement
-  return $ MFDElementGroup { mfdElementChildren  = children
+  children  <- onSubConfigs' parseElement
+  return $ MFDElementGroup { mfdElementName       = name
+                           , mfdElementChildren  = children
                            , mfdElementColor     = color
                            , mfdElementAlpha     = alpha
                            , mfdElementClip      = (,) <$> clipTL <*> clipBR
@@ -90,15 +91,16 @@ toPointTransform path pointComponents = do
     , Nothing
     )
 
-parseLine :: Parser MFDElement
-parseLine = do
+parseLine :: Text -> Parser MFDElement
+parseLine name = do
   width          <- readNumber "width"
   lineType       <- readLineType "lineType"
   rawPointsArray <- readArray "points"
   let splitPoints =
         split (\x -> fst x == ArmaArray []) (zip rawPointsArray [0 ..])
   points <- mapM (mapM readPoint) splitPoints
-  return $ MFDElementLine { mfdElementPoints   = points
+  return $ MFDElementLine { mfdElementName     = name
+                          , mfdElementPoints   = points
                           , mfdElementWidth    = width
                           , mfdElementLineType = lineType
                           }
@@ -108,11 +110,11 @@ parseLine = do
   readPoint (_, index) =
     userConfigError InvalidPoint ["points", T.pack $ show index]
 
-parsePolygon :: Parser MFDElement
-parsePolygon = do
+parsePolygon :: Text -> Parser MFDElement
+parsePolygon name = do
   rawPoints <- readArray "points"
   points    <- mapM readPoly (zip rawPoints [0 ..])
-  return $ MFDElementPolygon points
+  return $ MFDElementPolygon name points
  where
   readPoly (ArmaArray points, i) = mapM (readPolyPoint i) (zip points [0 ..])
   readPoly (_, i) = userConfigError InvalidPoint ["points", T.pack $ show i]
@@ -133,8 +135,8 @@ readTextAlign = do
     "center" -> return TextAlignCenter
     t        -> userConfigError (InvalidTextAlign t) ["align"]
 
-parseText :: Parser MFDElement
-parseText = do
+parseText :: Text -> Parser MFDElement
+parseText name = do
   textAlign       <- readTextAlign
   scale           <- readNumber "scale"
   source          <- readStringSource
@@ -144,7 +146,8 @@ parseText = do
   pos             <- readArray "pos" >>= toPointTransform ["pos"]
   right           <- readArray "right" >>= toPointTransform ["right"]
   down            <- readArray "down" >>= toPointTransform ["down"]
-  return $ MFDElementText { mfdElementAlign           = textAlign
+  return $ MFDElementText { mfdElementName            = name
+                          , mfdElementAlign           = textAlign
                           , mfdElementScale           = scale
                           , mfdElementSource          = source
                           , mfdElementSourceScale     = sourceScale

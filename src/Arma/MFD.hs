@@ -92,11 +92,13 @@ data ScaleModeNESW = ScaleModeNESWNone -- ^ Don't show any NESW text.
 
 -- | Sum type of all MFD elements
 data MFDElement = MFDElementLine {
+        mfdElementName :: Text,
         mfdElementPoints :: [[MFDPoint]],
         mfdElementWidth :: ArmaNumber,
         mfdElementLineType :: LineType
     }
     | MFDElementText {
+        mfdElementName :: Text,
         mfdElementAlign :: TextAlign,
         mfdElementScale :: ArmaNumber,
         mfdElementSource :: Either Text StringSource,
@@ -108,6 +110,7 @@ data MFDElement = MFDElementLine {
         mfdElementTextDown :: MFDPoint
     }
     | MFDElementPolygon {
+        mfdElementName :: Text,
         mfdElementPoints :: [[MFDPoint]]
     }
     {-| MFDElementScale {
@@ -133,6 +136,7 @@ data MFDElement = MFDElementLine {
         mfdElementMax :: ArmaNumber
     }-}
     | MFDElementGroup {
+        mfdElementName :: Text,
         mfdElementChildren :: [MFDElement],
         mfdElementColor :: Maybe Color,
         mfdElementAlpha :: Maybe SimpleExpression,

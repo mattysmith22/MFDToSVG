@@ -11,7 +11,6 @@ import           Arma.Config.Parser
 import           Arma.MFD
 import           Arma.MFD.Parser.Source
 import           Arma.MFD.Parser.Types
-import           Data.Char
 import qualified Data.Text                     as T
 
 -- |Parses a single bone at the parser's position

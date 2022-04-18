@@ -254,7 +254,7 @@ readVec2 ident = do
 -- | Casts to a number - evaluates if it is a string
 castNumber :: ConfigPath -> ArmaValue -> ConfigParser u ArmaNumber
 castNumber _    (ArmaNumber n) = return n
-castNumber _    (ArmaString _) = return 1
+castNumber _    (ArmaString x) = readEvalSimpleExpression x
 castNumber path val            = ConfigParser $ do
   lift $ except $ Left $ IncorrectAttributeType path
                                                 ArmaTypeNumber

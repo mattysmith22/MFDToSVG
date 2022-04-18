@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ed29ae4587b3e8d743192f928231d7757007c5416f90761705c2fecc754ca1dd
+-- hash: ca774555753b4b7b5792d5aba618e6d9dfdca27d8c434082e5faa7cfdde2880f
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -61,6 +61,7 @@ library
     , linear
     , megaparsec
     , parser-combinators
+    , svg-builder
     , text
     , transformers
     , yaml
@@ -83,6 +84,7 @@ executable MFDtoSVG-exe
     , linear
     , megaparsec
     , parser-combinators
+    , svg-builder
     , text
     , transformers
     , yaml
@@ -106,6 +108,7 @@ test-suite MFDtoSVG-bench
     , linear
     , megaparsec
     , parser-combinators
+    , svg-builder
     , text
     , transformers
     , yaml
@@ -128,6 +131,7 @@ test-suite MFDtoSVG-test
     , linear
     , megaparsec
     , parser-combinators
+    , svg-builder
     , text
     , transformers
     , yaml

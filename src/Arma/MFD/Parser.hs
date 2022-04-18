@@ -22,5 +22,5 @@ parseMfd = do
   color <- parseColor "color"
   bones <- onSubConfig "Bones"
     $ onSubConfigs' (\ident -> (ident, ) <$> parseBone)
-  elements <- onSubConfig "Draw" parseGroup
+  elements <- onSubConfig "Draw" (parseGroup "<root>")
   return (MFD color bones elements)
