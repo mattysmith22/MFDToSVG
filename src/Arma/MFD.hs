@@ -6,7 +6,7 @@ For more information on these values and what they represent, please see
 
 https://community.bistudio.com/wiki/Arma_3:_Multi-Function_Display_(MFD)_config_reference
 -}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE RecordWildCards #-}
 module Arma.MFD where
 
 import           Arma.SimpleExpression
@@ -150,3 +150,17 @@ data MFDElement bone col float str se p = MFDElementLine {
         mfdElementCondition :: Maybe se
     }
     deriving (Show, Eq)
+
+instance Functor (MFD bone col float str se) where
+    fmap f MFD{..} = MFD{draw = fmap f draw, ..}
+
+instance Functor (MFDElement bone col float str se) where
+    fmap f MFDElementLine{..} = MFDElementLine{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
+    fmap f MFDElementPolygon{..} = MFDElementPolygon{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
+    fmap f MFDElementGroup{..} = MFDElementGroup{mfdElementChildren = fmap (fmap f) mfdElementChildren, ..}
+    fmap f MFDElementText{..} = MFDElementText
+        { mfdElementTextPos = f mfdElementTextPos
+        , mfdElementTextRight = f mfdElementTextRight
+        , mfdElementTextDown = f mfdElementTextDown
+        , ..
+        }

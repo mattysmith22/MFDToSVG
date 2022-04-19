@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections, RecordWildCards, Rank2Types #-}
-module Arma.MFD.Draw where
+module Arma.MFD.Draw (drawMFD) where
 
 import           Arma.MFD.Sources.With
 import           Arma.MFD
@@ -49,13 +49,13 @@ col (r,g,b,a) = "rgba(" <> T.intercalate "," (fmap asPct [r,g,b,a]) <> ")"
         asPct = (<> "%") . T.pack . show . clamp 0 100 . (*100)
 
 lA' :: V2 Double -> Text
-lA' (V2 x y) = lA (x*100) (y*100)
+lA' (V2 x y) = lA x y
 
 mA' :: V2 Double -> Text 
-mA' (V2 x y) = mA (x*100) (y*100)
+mA' (V2 x y) = mA x y
 
 textCoord :: V2 Double -> [Attribute]
-textCoord (V2 x y) = [X_ <<- T.pack (show (x * 100)), Y_ <<- T.pack  (show (y * 100))]
+textCoord (V2 x y) = [X_ <<- T.pack (show x), Y_ <<- T.pack  (show y)]
 
 path' :: [V2 Double] -> Text
 path' [] = undefined
@@ -70,7 +70,7 @@ drawElement c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdEleme
 -- TODO: Draw text
 drawElement c MFDElementText{..} = let
         height = norm (mfdElementTextPos ^-^ mfdElementTextDown)
-        dim = T.pack (show (height * 100)) <> "px"
+        dim = T.pack (show height) <> "px"
         anchor = case mfdElementAlign of
             TextAlignLeft -> "end"
             TextAlignCenter -> "middle"
@@ -90,20 +90,26 @@ drawElement c MFDElementGroup{..} = let
     c' = fromMaybe c mfdElementColor
     in g_ [makeAttribute "data-name" mfdElementName] <$> foldMap (drawElement c') mfdElementChildren
 
-svg :: Element -> Element
-svg content =
+svg :: V2 Double -> Element -> Element
+svg (V2 x y) content =
      doctype
-  <> with (svg11_ content) [Version_ <<- "1.1", Width_ <<- "100", Height_ <<- "100"]
+  <> with (svg11_ content) [Version_ <<- "1.1", Width_ <<- T.pack (show x), Height_ <<- T.pack (show y)]
 
 withFont :: Element -> Element
 withFont = (fontDef <>)
     where
         fontDef = defs_ [] $ style_ [] "@font-face {font-family: Ticketing; src: url(file:///home/mbs/Downloads/ticketing/ticketing/TICKETING/Ticketing.ttf);}"
 
-withBlackBackground :: Element -> Element 
-withBlackBackground = (bg <>)
+withBlackBackground :: V2 Double -> Element -> Element 
+withBlackBackground (V2 x y) = (bg <>)
     where
-        bg = path_ [Fill_<<- "black", D_ <<- (mA' (V2 0 0) <> lA' (V2 0 1) <> lA' (V2 1 1) <> lA' (V2 1 0))]
+        bg = path_ [Fill_<<- "black", D_ <<- (mA' (V2 0 0) <> lA' (V2 0 y) <> lA' (V2 x y) <> lA' (V2 x 0))]
 
-drawMFD :: Processed MFD -> Fresh Element
-drawMFD MFD{..} = svg . withFont . withBlackBackground <$> drawElement color draw
+mulBy :: (Additive f, Num a) => f a -> f a -> f a
+mulBy = liftU2 (*)
+
+drawMFD' :: Processed MFD -> Element
+drawMFD' MFD{..} = runFresh $ drawElement color draw
+
+drawMFD :: V2 Double -> Processed MFD -> Element
+drawMFD size = svg size . withFont . withBlackBackground size . drawMFD' . fmap (mulBy size)

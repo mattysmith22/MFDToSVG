@@ -89,5 +89,5 @@ main = do
 
   sources <- decodeFileThrow "sources.yaml" :: IO SourceValues
   let processedMFD = runWithSource (process mfdConfig) sources
-  let mfdSvg = runFresh (drawMFD processedMFD)
+  let mfdSvg = drawMFD (V2 500 500) processedMFD
   renderToFile "out.svg" mfdSvg
