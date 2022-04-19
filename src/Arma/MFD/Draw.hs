@@ -65,7 +65,7 @@ strokeWidthFudgeFactor :: Double
 strokeWidthFudgeFactor = 0.001
 
 textDrawFudgeFactor :: V2 Double 
-textDrawFudgeFactor = V2 0.01 0.01
+textDrawFudgeFactor = V2 0.15 0.15
 
 drawElement :: Double -> RawColor -> Processed MFDElement -> Fresh Element
 drawElement scale c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
@@ -90,7 +90,7 @@ drawElement scale c MFDElementText{..} = let
             TextAlignCenter -> V2 0 1
             TextAlignRight -> V2 (-1) 1
 
-        fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* scale)
+        fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* height)
 
         element = text_
             ([Fill_ <<- col c, Font_family_ <<- "Ticketing", Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord (mfdElementTextPos ^+^ fudge))
@@ -115,10 +115,10 @@ svg (V2 x y) content =
      doctype
   <> with (svg11_ content) [Version_ <<- "1.1", Width_ <<- T.pack (show x), Height_ <<- T.pack (show y)]
 
-withFont :: Element -> Element
-withFont = (fontDef <>)
+withFont :: String -> Element -> Element
+withFont fontPath = (fontDef <>)
     where
-        fontDef = defs_ [] $ style_ [] "@font-face {font-family: Ticketing; src: url(file:///home/mbs/Downloads/ticketing/ticketing/TICKETING/Ticketing.ttf);}"
+        fontDef = defs_ [] $ style_ [] $ toElement $ "@font-face {font-family: Ticketing; src: url(" <> T.pack fontPath <> ");}"
 
 withBlackBackground :: V2 Double -> Element -> Element 
 withBlackBackground (V2 x y) = (bg <>)
@@ -131,5 +131,5 @@ mulBy = liftU2 (*)
 drawMFD' :: Double -> Processed MFD -> Element
 drawMFD' scale MFD{..} = runFresh $ drawElement scale color draw
 
-drawMFD :: V2 Double -> Processed MFD -> Element
-drawMFD size@(V2 _ y) = svg size . withFont . withBlackBackground size . drawMFD' y . fmap (mulBy size)
+drawMFD :: String -> V2 Double -> Processed MFD -> Element
+drawMFD fontPath size@(V2 _ y) = svg size . withFont fontPath . withBlackBackground size . drawMFD' y . fmap (mulBy size)

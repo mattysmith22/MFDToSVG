@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2bc95da34fc11a9ac2c96c183cfda8c1b33ec469293dfd30f723475c64ba83e0
+-- hash: f462cf8dd3ecf40ae7214fd70c183bcedc0972b45a895f59626583a40750a8ca
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -87,6 +87,7 @@ executable MFDtoSVG-exe
     , parser-combinators
     , svg-builder
     , text
+    , threepenny-gui
     , transformers
     , yaml
   default-language: Haskell2010

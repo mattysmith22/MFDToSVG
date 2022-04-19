@@ -48,7 +48,8 @@ executables:
     - -Werror
     dependencies:
     - MFDtoSVG
-    default-extensions: OverloadedStrings
+    - threepenny-gui
+    default-extensions: OverloadedStrings  
 
 tests:
   MFDtoSVG-test:
