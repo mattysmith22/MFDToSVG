@@ -79,6 +79,9 @@ lA' (V2 x y) = lA (x*100) (y*100)
 mA' :: V2 Double -> Text 
 mA' (V2 x y) = mA (x*100) (y*100)
 
+textCoord :: V2 Double -> [Attribute]
+textCoord (V2 x y) = [X_ <<- T.pack (show (x * 100)), Y_ <<- T.pack  (show (y * 100))]
+
 path' :: [V2 Double] -> Text
 path' [] = undefined
 path' (m:ls) = mA' m <> foldMap lA' ls
@@ -87,9 +90,26 @@ drawElement :: MFDElement  -> (forall arr. WithSources arr => arr (RawColor, Bon
 drawElement MFDElementLine{..} = arr (\vals -> pure $ g_ [makeAttribute "data-name" mfdElementName] $ foldMap (toLine vals) $ filter (not. null) mfdElementPoints)
     where
         toLine :: (RawColor, BoneMap) -> [MFDPoint] -> Element
-        toLine (c, boneMap) points = path_ [Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' (fmap (calcPoint boneMap) points)]
+        toLine (c, boneMap) points = path_ [Stroke_width_ <<- "0.1", Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' (fmap (calcPoint boneMap) points)]
 -- TODO: Draw text
-drawElement MFDElementText{..} = either (const $ arr $ const $ pure mempty) (\x -> arr (const $ pure mempty) . getString x) mfdElementSource
+drawElement MFDElementText{..} = proc (c,boneMap)  -> do
+    sourceVal <- either (arr . const) getString mfdElementSource -< ()
+
+    let pos = calcPoint boneMap mfdElementTextPos
+        right = calcPoint boneMap mfdElementTextRight
+        down = calcPoint boneMap mfdElementTextDown
+    
+    let height = norm (pos ^-^ down) * 0.75
+    let dim = T.pack (show (height * 100)) <> "px"
+    let anchor = case mfdElementAlign of
+            TextAlignLeft -> "end"
+            TextAlignCenter -> "middle"
+            TextAlignRight -> "start"
+
+    let element = text_
+            ([Fill_ <<- col c, Font_family_ <<- "Consolas", Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord pos)
+            (toElement sourceVal)
+    returnA -< pure element
 drawElement MFDElementPolygon{..} = arr (\vals -> pure $ g_ [makeAttribute "data-name" mfdElementName] $ foldMap (toPoly vals) $ filter (not. null) mfdElementPoints)
     where
         toPoly :: (RawColor, BoneMap) -> [MFDPoint] -> Element
@@ -106,8 +126,13 @@ svg content =
      doctype
   <> with (svg11_ content) [Version_ <<- "1.1", Width_ <<- "100", Height_ <<- "100"]
 
+withBlackBackground :: Element -> Element 
+withBlackBackground = (bg <>)
+    where
+        bg = path_ [Fill_<<- "black", D_ <<- (mA' (V2 0 0) <> lA' (V2 0 1) <> lA' (V2 1 1) <> lA' (V2 1 0))]
+
 drawMFD :: MFD -> WithSource (Fresh Element)
 drawMFD MFD{..} = WithSource $ proc _ -> do
     bones' <- unWithSource $ calcBones bones -< ()
     rootCol <- unWithSource $ calcColor color -< ()
-    arr (fmap svg) . drawElement draw -< (rootCol, bones')
+    arr (fmap (svg . withBlackBackground)) . drawElement draw -< (rootCol, bones')

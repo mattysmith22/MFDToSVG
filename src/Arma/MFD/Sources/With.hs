@@ -40,7 +40,7 @@ instance WithSources SourceArr where
 data WithSource a where
     WithSource :: (forall arr. WithSources arr => arr () a) -> WithSource a
 
-runWithSource :: forall a. WithSource a -> SourceValues -> a
+runWithSource :: WithSource a -> SourceValues -> a
 runWithSource (WithSource arr) vals = runSourceArr arr vals ()
 
 unWithSource :: WithSource a -> (forall arr. WithSources arr => arr () a)

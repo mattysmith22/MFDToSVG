@@ -1,24 +1,21 @@
 module Vec
-    ( module Linear.V2
-    , module Linear.Vector
+    ( module Linear
     , Vec2
     , rotateAround
-    , rotate
     , interpVec
     , interpSingle
     , clamp
     ) where
 
-import Linear.V2
-import Linear.Vector
+import Linear
 
 type Vec2 = V2 Double
 
 rotateAround :: Double -> Vec2 -> Vec2 -> Vec2
-rotateAround t centre = (^+^centre) . rotate t . (^-^centre)
+rotateAround t centre = (^+^centre) . rotate' t . (^-^centre)
 
-rotate :: Double -> Vec2 -> Vec2
-rotate t (V2 x y) = V2
+rotate' :: Double -> Vec2 -> Vec2
+rotate' t (V2 x y) = V2
     (x * cos t - y * sin t)
     (x * sin t + y * cos t)
 

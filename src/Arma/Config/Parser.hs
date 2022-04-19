@@ -251,7 +251,6 @@ readVec2 ident = do
       path <- statePath <$> ask
       lift $ throwE $ InvalidVec2 (path ++ [ident])
 
--- | Casts to a number - evaluates if it is a string
 castNumber :: ConfigPath -> ArmaValue -> ConfigParser u ArmaNumber
 castNumber _    (ArmaNumber n) = return n
 castNumber _    (ArmaString x) = readEvalSimpleExpression x
