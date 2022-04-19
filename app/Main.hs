@@ -18,6 +18,7 @@ import           Arma.MFD.Sources.Depends
 import           Arma.MFD.Sources.Values
 import           Arma.MFD.Draw
 import           Arma.MFD
+import           Arma.MFD.Process
 import           Data.Yaml
 import Arma.MFD.Sources.With (runWithSource)
 import Graphics.Svg
@@ -60,7 +61,7 @@ readConfigIO value = case fromArmaValue value of
 mLog :: Text -> IO ()
 mLog x = TIO.putStrLn $ "[MFDtoSVG] " <> x
 
-demo :: MFD
+demo :: (UnProcessed MFD)
 demo = MFD {
   color = (NumLit 1, NumLit 0, NumLit 0, NumLit 1),
   bones = [],
@@ -83,9 +84,10 @@ main = do
   mfdConfig <- parseConfigIO parseMfd config
 
   mLog "Calculating dependencies"
-  let dependencies = getSourceDependencies $ drawMFD mfdConfig
+  let dependencies = getSourceDependencies $ process mfdConfig
   encodeFile "sourcesTemplate.yaml" (defaultValues dependencies)
 
   sources <- decodeFileThrow "sources.yaml" :: IO SourceValues
-  let mfdSvg = runFresh $ runWithSource (drawMFD mfdConfig) sources
+  let processedMFD = runWithSource (process mfdConfig) sources
+  let mfdSvg = runFresh (drawMFD processedMFD)
   renderToFile "out.svg" mfdSvg

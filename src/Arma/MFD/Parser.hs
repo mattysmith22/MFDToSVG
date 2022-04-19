@@ -17,7 +17,7 @@ import           Arma.MFD.Parser.Element
 import           Arma.MFD.Parser.Types
 
 -- | Parse a full MFD from the config position
-parseMfd :: Parser MFD
+parseMfd :: Parser (UnProcessed MFD)
 parseMfd = do
   color <- parseColor "color"
   bones <- onSubConfig "Bones"

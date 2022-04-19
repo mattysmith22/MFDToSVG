@@ -1,4 +1,4 @@
-module Control.Arrow.Extra(maybeA, maybeA', foldMapA) where
+module Control.Arrow.Extra(maybeA, maybeA', foldMapA, traverseA) where
 
 import Prelude hiding ((.), id)
 import Control.Category

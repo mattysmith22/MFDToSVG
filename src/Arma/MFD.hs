@@ -6,6 +6,7 @@ For more information on these values and what they represent, please see
 
 https://community.bistudio.com/wiki/Arma_3:_Multi-Function_Display_(MFD)_config_reference
 -}
+{-# LANGUAGE TypeFamilies #-}
 module Arma.MFD where
 
 import           Arma.SimpleExpression
@@ -13,11 +14,16 @@ import           Arma.Value
 import           Data.Text                      ( Text )
 import           Vec
 
+type UnProcessed x = x [(Text, MFDBone)] Color FloatSource (Either Text StringSource) SimpleExpression MFDPoint
+type Processed x = x () RawColor ArmaNumber Text ArmaNumber Vec2
+
+type RawColor = (Double,Double,Double,Double)
+
 -- | Full MFD representation
-data MFD = MFD
-  { color :: Color
-  , bones :: [(Text, MFDBone)]
-  , draw  :: MFDElement
+data MFD bone col float str se p = MFD
+  { color :: col
+  , bones :: bone
+  , draw  :: MFDElement bone col float str se p
   }
   deriving (Show, Eq)
 
@@ -91,9 +97,9 @@ data ScaleModeNESW = ScaleModeNESWNone -- ^ Don't show any NESW text.
     deriving (Show, Eq)
 
 -- | Sum type of all MFD elements
-data MFDElement = MFDElementLine {
+data MFDElement bone col float str se p = MFDElementLine {
         mfdElementName :: Text,
-        mfdElementPoints :: [[MFDPoint]],
+        mfdElementPoints :: [[p]],
         mfdElementWidth :: ArmaNumber,
         mfdElementLineType :: LineType
     }
@@ -101,17 +107,17 @@ data MFDElement = MFDElementLine {
         mfdElementName :: Text,
         mfdElementAlign :: TextAlign,
         mfdElementScale :: ArmaNumber,
-        mfdElementSource :: Either Text StringSource,
+        mfdElementSource :: str,
         mfdElementSourceScale :: ArmaNumber,
         mfdElementSourceLength :: Maybe ArmaNumber,
         mfdElementSourcePrecision :: Maybe ArmaNumber,
-        mfdElementTextPos :: MFDPoint,
-        mfdElementTextRight :: MFDPoint,
-        mfdElementTextDown :: MFDPoint
+        mfdElementTextPos :: p,
+        mfdElementTextRight :: p,
+        mfdElementTextDown :: p
     }
     | MFDElementPolygon {
         mfdElementName :: Text,
-        mfdElementPoints :: [[MFDPoint]]
+        mfdElementPoints :: [[p]]
     }
     {-| MFDElementScale {
         mfdElementAlign :: TextAlign,
@@ -137,10 +143,10 @@ data MFDElement = MFDElementLine {
     }-}
     | MFDElementGroup {
         mfdElementName :: Text,
-        mfdElementChildren :: [MFDElement],
-        mfdElementColor :: Maybe Color,
-        mfdElementAlpha :: Maybe SimpleExpression,
+        mfdElementChildren :: [MFDElement bone col float str se p],
+        mfdElementColor :: Maybe col,
+        mfdElementAlpha :: Maybe se,
         mfdElementClip :: Maybe (Vec2, Vec2),
-        mfdElementCondition :: Maybe SimpleExpression
+        mfdElementCondition :: Maybe se
     }
     deriving (Show, Eq)

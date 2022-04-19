@@ -18,7 +18,7 @@ import qualified Data.Text                     as T
 import           Vec
 
 -- |Parses a single element at the parser's position
-parseElement :: Text -> Parser MFDElement
+parseElement :: Text -> Parser (UnProcessed MFDElement)
 parseElement name = do
   elementType <- wDefault "group" $ readString "type"
   case elementType of
@@ -29,7 +29,7 @@ parseElement name = do
     --"scale" -> parseScale TODO: Implement scale
     invalidType -> return $ MFDElementGroup invalidType [] Nothing Nothing Nothing Nothing-- userConfigError (InvalidType invalidType) ["type"] 
 
-parseGroup :: Text -> Parser MFDElement
+parseGroup :: Text -> Parser (UnProcessed MFDElement)
 parseGroup name = do
   color     <- optional $ parseColor "color"
   alpha     <- optional $ parseSimpleExpression "alpha"
@@ -91,7 +91,7 @@ toPointTransform path pointComponents = do
     , Nothing
     )
 
-parseLine :: Text -> Parser MFDElement
+parseLine :: Text -> Parser (UnProcessed MFDElement)
 parseLine name = do
   width          <- readNumber "width"
   lineType       <- readLineType "lineType"
@@ -110,7 +110,7 @@ parseLine name = do
   readPoint (_, index) =
     userConfigError InvalidPoint ["points", T.pack $ show index]
 
-parsePolygon :: Text -> Parser MFDElement
+parsePolygon :: Text -> Parser (UnProcessed MFDElement)
 parsePolygon name = do
   rawPoints <- readArray "points"
   points    <- mapM readPoly (zip rawPoints [0 ..])
@@ -135,7 +135,7 @@ readTextAlign = do
     "center" -> return TextAlignCenter
     t        -> userConfigError (InvalidTextAlign t) ["align"]
 
-parseText :: Text -> Parser MFDElement
+parseText :: Text -> Parser (UnProcessed MFDElement)
 parseText name = do
   textAlign       <- readTextAlign
   scale           <- readNumber "scale"

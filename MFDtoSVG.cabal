@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ca774555753b4b7b5792d5aba618e6d9dfdca27d8c434082e5faa7cfdde2880f
+-- hash: 2bc95da34fc11a9ac2c96c183cfda8c1b33ec469293dfd30f723475c64ba83e0
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Arma.MFD.Parser.Element
       Arma.MFD.Parser.Source
       Arma.MFD.Parser.Types
+      Arma.MFD.Process
       Arma.MFD.Sources.Depends
       Arma.MFD.Sources.Key
       Arma.MFD.Sources.Values
