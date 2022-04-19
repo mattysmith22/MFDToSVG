@@ -61,34 +61,54 @@ path' :: [V2 Double] -> Text
 path' [] = undefined
 path' (m:ls) = mA' m <> foldMap lA' ls
 
-drawElement :: RawColor -> Processed MFDElement -> Fresh Element
-drawElement c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
+strokeWidthFudgeFactor :: Double 
+strokeWidthFudgeFactor = 0.001
+
+textDrawFudgeFactor :: V2 Double 
+textDrawFudgeFactor = V2 0.01 0.01
+
+drawElement :: Double -> RawColor -> Processed MFDElement -> Fresh Element
+drawElement scale c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toLine $ filter ((> 1) . length) mfdElementPoints
     where
+        strokeWidth = strokeWidthFudgeFactor * scale * mfdElementWidth
+
         toLine :: [Vec2] -> Element
-        toLine points = path_ [Stroke_width_ <<- "0.1", Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' points]
+        toLine points = path_ [Stroke_width_ <<- T.pack (show strokeWidth), Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' points]
 -- TODO: Draw text
-drawElement c MFDElementText{..} = let
+drawElement scale c MFDElementText{..} = let
         height = norm (mfdElementTextPos ^-^ mfdElementTextDown)
         dim = T.pack (show height) <> "px"
+
         anchor = case mfdElementAlign of
             TextAlignLeft -> "end"
             TextAlignCenter -> "middle"
             TextAlignRight -> "start"
 
+        fudgeMultiplier = case mfdElementAlign of
+            TextAlignLeft -> V2 1 1
+            TextAlignCenter -> V2 0 1
+            TextAlignRight -> V2 (-1) 1
+
+        fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* scale)
+
         element = text_
-            ([Fill_ <<- col c, Font_family_ <<- "Ticketing", Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord mfdElementTextPos)
+            ([Fill_ <<- col c, Font_family_ <<- "Ticketing", Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord (mfdElementTextPos ^+^ fudge))
             (toElement mfdElementSource)
     in pure element
-drawElement c MFDElementPolygon{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
+drawElement _ c MFDElementPolygon{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toPoly $ filter ((>1) . length) mfdElementPoints
     where
         toPoly :: [Vec2] -> Element
         toPoly points = path_ [Fill_ <<- col c, D_ <<- path' points]
 
-drawElement c MFDElementGroup{..} = let
+drawElement scale c MFDElementGroup{..} = let
     c' = fromMaybe c mfdElementColor
-    in g_ [makeAttribute "data-name" mfdElementName] <$> foldMap (drawElement c') mfdElementChildren
+    shouldShow = fromMaybe 1 mfdElementCondition > 0
+    in if shouldShow then
+        g_ [makeAttribute "data-name" mfdElementName] <$> foldMap (drawElement scale c') mfdElementChildren
+    else
+        pure $ g_ [makeAttribute "data-name" mfdElementName, makeAttribute "data-group-empty" "true"]
 
 svg :: V2 Double -> Element -> Element
 svg (V2 x y) content =
@@ -108,8 +128,8 @@ withBlackBackground (V2 x y) = (bg <>)
 mulBy :: (Additive f, Num a) => f a -> f a -> f a
 mulBy = liftU2 (*)
 
-drawMFD' :: Processed MFD -> Element
-drawMFD' MFD{..} = runFresh $ drawElement color draw
+drawMFD' :: Double -> Processed MFD -> Element
+drawMFD' scale MFD{..} = runFresh $ drawElement scale color draw
 
 drawMFD :: V2 Double -> Processed MFD -> Element
-drawMFD size = svg size . withFont . withBlackBackground size . drawMFD' . fmap (mulBy size)
+drawMFD size@(V2 _ y) = svg size . withFont . withBlackBackground size . drawMFD' y . fmap (mulBy size)

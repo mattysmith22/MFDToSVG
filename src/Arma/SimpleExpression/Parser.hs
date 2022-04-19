@@ -38,7 +38,7 @@ exprP = makeExprParser
   , [Prefix (UnOp OpDeg <$ symbol "deg"), Prefix (UnOp OpRad <$ symbol "rad")]
   , [InfixL (BinOp OpMul <$ symbol "*"), InfixL (BinOp OpDiv <$ symbol "/")]
   , [InfixL (BinOp OpAdd <$ symbol "+"), InfixL (BinOp OpSub <$ symbol "-")]
-  , [InfixN (BinOp OpMore <$ symbol "<"), InfixL (BinOp OpMore <$ symbol ">")]
+  , [InfixN (BinOp OpLess <$ symbol "<"), InfixL (BinOp OpMore <$ symbol ">")]
   ]
 
 -- | Parses an arma value from input string
