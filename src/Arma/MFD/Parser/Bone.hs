@@ -33,8 +33,8 @@ parseLinearBone = do
   sourceMin   <- readNumber "min"
   sourceMax   <- readNumber "max"
   sourceScale <- wDefault 1 $ readNumber "sourceScale"
-  posMin      <- readVec2 "maxPos" -- minPos matches max source value - for historical reasons
-  posMax      <- readVec2 "minPos"
+  posMin      <- readVec2 "minPos"
+  posMax      <- readVec2 "maxPos"
   return Linear { boneFloatSource = source
                 , boneSourceMin   = sourceMin
                 , boneSourceMax   = sourceMax

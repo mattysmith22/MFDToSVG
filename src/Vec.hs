@@ -2,6 +2,7 @@ module Vec
     ( module Linear
     , Vec2
     , rotateAround
+    , rotate'
     , interpVec
     , interpSingle
     , clamp
@@ -11,13 +12,18 @@ import Linear
 
 type Vec2 = V2 Double
 
+deg2rad :: Double -> Double 
+deg2rad = (/ 180) . (* pi)
+
 rotateAround :: Double -> Vec2 -> Vec2 -> Vec2
 rotateAround t centre = (^+^centre) . rotate' t . (^-^centre)
 
 rotate' :: Double -> Vec2 -> Vec2
 rotate' t (V2 x y) = V2
-    (x * cos t - y * sin t)
-    (x * sin t + y * cos t)
+    (x * cos t' - y * sin t')
+    (x * sin t' + y * cos t')
+    where
+        t' = deg2rad t
 
 interpVec :: (Double,Double) -> (Vec2, Vec2) -> Double -> Vec2
 interpVec (from,to) (fromV, toV) inp = lerp x' fromV toV

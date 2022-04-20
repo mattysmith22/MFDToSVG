@@ -9,7 +9,6 @@ import qualified Data.Map as Map
 import qualified Data.Text as T
 import Arma.SimpleExpression.Eval
 import Vec
-import Arma.MFD.Bone (applyBone)
 import Data.Foldable
 import Data.Maybe (fromMaybe)
 import Data.Functor (void)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f462cf8dd3ecf40ae7214fd70c183bcedc0972b45a895f59626583a40750a8ca
+-- hash: d8c98c2e39dd6ea62c26b761004cd58f1500bdc34c26da879c96ea74ebab6057
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -30,7 +30,6 @@ library
       Arma.Config
       Arma.Config.Parser
       Arma.MFD
-      Arma.MFD.Bone
       Arma.MFD.Draw
       Arma.MFD.Parser
       Arma.MFD.Parser.Bone

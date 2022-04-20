@@ -7,17 +7,47 @@ import Data.Map (Map)
 import Vec
 import Control.Arrow
 import qualified Data.Map as Map
-import Arma.MFD.Bone (applyBone)
 import Arma.SimpleExpression.Eval (evalSimpleExpression')
 import Data.Maybe (fromMaybe)
 import Control.Arrow.Extra
 
 type BoneMap = Map Text (Vec2 -> Vec2)
 
+flipVertically :: Vec2 -> Vec2
+flipVertically (V2 x y) = V2 x (-y)
+
+calcBone :: MFDBone -> WithSource (Vec2 -> Vec2)
+calcBone (Fixed coord) = WithSource $ arr $ const (^+^ coord)
+calcBone Linear{..} = WithSource $ proc _ -> do
+    val <- getFloat boneFloatSource -< ()
+    let val' = clamp boneSourceMin boneSourceMax (val * boneSourceScale)
+        addVec = interpVec (boneSourceMin, boneSourceMax) (bonePosMin, bonePosMax) val'
+    returnA -< (^+^ addVec)
+calcBone Rotational{..} = WithSource $ proc _ -> do
+    val <- getFloat boneFloatSource -< ()
+    let val' = clamp boneSourceMin boneSourceMax val
+        val'' = interpSingle (boneSourceMin, boneSourceMax) (boneRotMin, boneRotMax) val'
+    returnA -< (^+^ boneCenter) . rotate' val'' . flipVertically
+-- TODO: Implement horizon
+calcBone Horizon{..} = WithSource $ proc _ -> do
+    bank <- getFloat (FloatSource "horizonbank") -< ()
+    dive <- getFloat (FloatSource "horizondive") -< ()
+    let elev = - (boneHorizonElevation + dive)
+    let (V2 x0 y0) = bonePos0
+    let (V2 x10 y10) = bonePos10
+    let size = (y10 - y0) / 10
+    let aspect = (x0 - x10) / (y0 - y10)
+    returnA -< (^+^ bonePos0) . liftI2 (*) (V2 aspect 1) . rotate' bank . (^+^ V2 0 (elev * size))  . (^* (0.5 * sqrt 2))
+
+applyPos0Pos10 :: Vec2 -> Vec2 -> Vec2 -> Vec2
+applyPos0Pos10 pos0 pos10 val = let
+    bounds = liftI2 (,) pos0 pos10
+    in liftI2 (\(pos0, pos10) x -> interpSingle (0, 10) (pos0, pos10) x) bounds val
+
 calcBones :: [(Text, MFDBone)] -> WithSource BoneMap
-calcBones  x = Map.fromList <$> traverse calcBone x
+calcBones  x = Map.fromList <$> traverse calcBone' x
     where
-        calcBone (k,x) = (k,) <$> applyBone x
+        calcBone' (k,x) = (k,) <$> calcBone x
 
 calcColor :: Color -> WithSource RawColor
 calcColor (r,g,b,a) = (,,,)
@@ -33,7 +63,7 @@ calcPoint boneMap = foldr calcTransform (V2 0 0)
         calcTransform :: MFDPointTransform -> (Vec2 -> Vec2)
         calcTransform MFDPointTransform{..} = let
             boneVal = maybe id (fromMaybe id . (`Map.lookup` boneMap)) mfdPointTransformBone 
-            in (mfdPointTransformOffset ^+^) . boneVal
+            in boneVal . (mfdPointTransformOffset ^+^) 
 
 calcElement :: UnProcessed MFDElement -> (forall arr. WithSources arr => arr BoneMap (Processed MFDElement))
 calcElement MFDElementLine{..} = proc boneMap -> do
