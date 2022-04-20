@@ -24,7 +24,7 @@ import Arma.Value.Parser (parseArmaValue)
 import Arma.MFD.Process (process)
 import Arma.MFD
 import Graphics.Svg (renderText)
-import Arma.MFD.Draw (drawMFD)
+import Arma.MFD.Draw
 import Arma.MFD.Sources.With (runWithSource)
 import Linear (V2(V2))
 import Data.Maybe (fromMaybe)
@@ -76,6 +76,12 @@ setup :: UnProcessed MFD -> Window -> UI ()
 setup mfd w = mdo
     let deps = getSourceDependencies $ process mfd
     ticketingUrl <- loadFile "application/octet-stream" "/home/mbs/Downloads/ticketing/ticketing/TICKETING/Ticketing.ttf"
+
+    let drawConf = DrawContext
+            { mfdSize = V2 500 500
+            , armaFontMappings = Map.fromList [("fza_ticketing", "Ticketing")]
+            , newFontMappings = [("Ticketing", [(T.pack ticketingUrl, "truetype")])]
+            }
     (elemt, initSrc, srcChangeEvt, hookup) <- setupDeps deps beh
     beh <- accumB initSrc srcChangeEvt
     _ <- getBody w #+ [UI.table #+ [UI.tr #+
@@ -85,7 +91,7 @@ setup mfd w = mdo
     hookup
     let drawWithSource sources = do
             let processedMFD = runWithSource (process mfd) sources
-            let svg = TL.unpack $ renderText $ drawMFD ticketingUrl (V2 500 500) processedMFD
+            let svg = TL.unpack $ renderText $ drawMFD drawConf processedMFD
             runFunction (setResult svg)
         
     drawWithSource initSrc

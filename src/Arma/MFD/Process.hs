@@ -33,16 +33,12 @@ calcBone Horizon{..} = WithSource $ proc _ -> do
     bank <- getFloat (FloatSource "horizonbank") -< ()
     dive <- getFloat (FloatSource "horizondive") -< ()
     let elev = - (boneHorizonElevation + dive)
-    let (V2 x0 y0) = bonePos0
-    let (V2 x10 y10) = bonePos10
-    let size = (y10 - y0) / 10
-    let aspect = (x0 - x10) / (y0 - y10)
     returnA -< (^+^ bonePos0) . liftI2 (*) (V2 aspect 1) . rotate' bank . (^+^ V2 0 (elev * size))  . (^* (0.5 * sqrt 2))
-
-applyPos0Pos10 :: Vec2 -> Vec2 -> Vec2 -> Vec2
-applyPos0Pos10 pos0 pos10 val = let
-    bounds = liftI2 (,) pos0 pos10
-    in liftI2 (\(pos0, pos10) x -> interpSingle (0, 10) (pos0, pos10) x) bounds val
+    where
+        (V2 x0 y0) = bonePos0
+        (V2 x10 y10) = bonePos10
+        size = (y10 - y0) / 10
+        aspect = (x0 - x10) / (y0 - y10)
 
 calcBones :: [(Text, MFDBone)] -> WithSource BoneMap
 calcBones  x = Map.fromList <$> traverse calcBone' x
@@ -109,4 +105,5 @@ process MFD{..} = WithSource $ proc _ -> do
         { color = rootCol
         , bones = ()
         , draw = element
+        , ..
         }

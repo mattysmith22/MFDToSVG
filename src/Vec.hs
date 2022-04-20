@@ -26,9 +26,8 @@ rotate' t (V2 x y) = V2
         t' = deg2rad t
 
 interpVec :: (Double,Double) -> (Vec2, Vec2) -> Double -> Vec2
-interpVec (from,to) (fromV, toV) inp = lerp x' fromV toV
+interpVec (from,to) (fromV, toV) inp = lerp x fromV toV
     where
-        x' = clamp 0 1 x
         x = (inp -  from) / (to - from)
 
 clamp :: Ord a => a -> a -> a -> a
@@ -36,7 +35,6 @@ clamp a b = min (a `max` b) . max (a `min` b)
 
 interpSingle :: (Ord a, Fractional a) => (a, a) -> (a, a) -> a -> a
 interpSingle (fromIn, toIn) (fromOut, toOut) inp =
-        fromOut + ((toOut - fromOut) * x')
+        fromOut + ((toOut - fromOut) * x)
     where
-        x' = clamp 0 1 x
         x = (inp -  fromIn) / (toIn - fromIn)

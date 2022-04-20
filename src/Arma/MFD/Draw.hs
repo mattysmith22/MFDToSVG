@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections, RecordWildCards, Rank2Types #-}
-module Arma.MFD.Draw (drawMFD) where
+module Arma.MFD.Draw (drawMFD, DrawContext(..)) where
 
 import           Arma.MFD.Sources.With
 import           Arma.MFD
@@ -42,6 +42,12 @@ runFresh = snd . flip runFresh' 0
 fresh :: Fresh Int
 fresh = Fresh $ \i -> (i+1, i)
 
+data DrawContext = DrawContext
+    { mfdSize :: V2 Double
+    , armaFontMappings :: Map Text Text
+    , newFontMappings :: [(Text, [(Text, Text)])]
+    }
+
 col :: RawColor -> Text
 col (r,g,b,a) = "rgba(" <> T.intercalate "," (fmap asPct [r,g,b,a]) <> ")"
     where
@@ -66,16 +72,16 @@ strokeWidthFudgeFactor = 0.001
 textDrawFudgeFactor :: V2 Double 
 textDrawFudgeFactor = V2 0.15 0.15
 
-drawElement :: Double -> RawColor -> Processed MFDElement -> Fresh Element
-drawElement scale c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
+drawElement :: DrawContext -> Text -> RawColor -> Processed MFDElement -> Fresh Element
+drawElement ctx _ c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toLine $ filter ((> 1) . length) mfdElementPoints
     where
-        strokeWidth = strokeWidthFudgeFactor * scale * mfdElementWidth
+        strokeWidth = strokeWidthFudgeFactor * mfdScaling ctx * mfdElementWidth
 
         toLine :: [Vec2] -> Element
         toLine points = path_ [Stroke_width_ <<- T.pack (show strokeWidth), Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' points]
 -- TODO: Draw text
-drawElement scale c MFDElementText{..} = let
+drawElement DrawContext{..} font c MFDElementText{..} = let
         height = norm (mfdElementTextPos ^-^ mfdElementTextDown)
         dim = T.pack (show height) <> "px"
 
@@ -91,21 +97,23 @@ drawElement scale c MFDElementText{..} = let
 
         fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* height)
 
+        fontName = fromMaybe font $ Map.lookup font armaFontMappings
+
         element = text_
-            ([Fill_ <<- col c, Font_family_ <<- "Ticketing", Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord (mfdElementTextPos ^+^ fudge))
+            ([Fill_ <<- col c, Font_family_ <<- fontName, Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord (mfdElementTextPos ^+^ fudge))
             (toElement mfdElementSource)
     in pure element
-drawElement _ c MFDElementPolygon{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
+drawElement _ _ c MFDElementPolygon{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toPoly $ filter ((>1) . length) mfdElementPoints
     where
         toPoly :: [Vec2] -> Element
         toPoly points = path_ [Fill_ <<- col c, D_ <<- path' points]
 
-drawElement scale c MFDElementGroup{..} = let
+drawElement ctx font c MFDElementGroup{..} = let
     c' = fromMaybe c mfdElementColor
     shouldShow = fromMaybe 1 mfdElementCondition > 0
     in if shouldShow then
-        g_ [makeAttribute "data-name" mfdElementName] <$> (maybe (pure id) withClip mfdElementClip <*> foldMap (drawElement scale c') mfdElementChildren)
+        g_ [makeAttribute "data-name" mfdElementName] <$> (maybe (pure id) withClip mfdElementClip <*> foldMap (drawElement ctx font c') mfdElementChildren)
     else
         pure $ g_ [makeAttribute "data-name" mfdElementName, makeAttribute "data-group-empty" "true"]
     where
@@ -115,26 +123,35 @@ drawElement scale c MFDElementGroup{..} = let
 rectToPath :: Vec2 -> Vec2 -> Text
 rectToPath (V2 x1 y1) (V2 x2 y2) = mA' (V2 x1 y1) <> lA' (V2 x1 y2) <> lA' (V2 x2 y2) <> lA' (V2 x2 y1) <> lA' (V2 x1 y1)
 
-svg :: V2 Double -> Element -> Element
-svg (V2 x y) content =
+svg :: DrawContext -> Element -> Element
+svg DrawContext{mfdSize = (V2 x y)} content =
      doctype
   <> with (svg11_ content) [Version_ <<- "1.1", Width_ <<- T.pack (show x), Height_ <<- T.pack (show y)]
 
-withFont :: String -> Element -> Element
-withFont fontPath = (fontDef <>)
+withFonts :: DrawContext -> Element -> Element
+withFonts DrawContext{..} = (fontDef <>)
     where
-        fontDef = defs_ [] $ style_ [] $ toElement $ "@font-face {font-family: Ticketing; src: url(" <> T.pack fontPath <> ");}"
+        fontDef = defs_ [] $ style_ [] $ toElement $ T.intercalate " " $ fmap fontDef' newFontMappings
 
-withBlackBackground :: V2 Double -> Element -> Element 
-withBlackBackground size = (bg <>)
+        fontDef' :: (Text, [(Text, Text)]) -> Text
+        fontDef' (name, defs) = "@font-face {font-family: " <> name <> "; src: " <> T.intercalate ", " (fmap formatUrl defs) <> ";}"
+
+        formatUrl :: (Text, Text) -> Text
+        formatUrl (url, format) = "url(\"" <> url <> "\") format(\"" <> format <> "\")"
+
+withBlackBackground :: DrawContext -> Element -> Element 
+withBlackBackground DrawContext{..} = (bg <>)
     where
-        bg = path_ [Fill_<<- "black", D_ <<- rectToPath (V2 0 0) size]
+        bg = path_ [Fill_<<- "black", D_ <<- rectToPath (V2 0 0) mfdSize]
 
 mulBy :: (Additive f, Num a) => f a -> f a -> f a
 mulBy = liftU2 (*)
 
-drawMFD' :: Double -> Processed MFD -> Element
-drawMFD' scale MFD{..} = runFresh $ drawElement scale color draw
+mfdScaling :: DrawContext -> Double
+mfdScaling DrawContext{ mfdSize = V2 _ y} = y
 
-drawMFD :: String -> V2 Double -> Processed MFD -> Element
-drawMFD fontPath size@(V2 _ y) = svg size . withFont fontPath . withBlackBackground size . drawMFD' y . mapPoint (mulBy size)
+drawMFD' :: DrawContext -> Processed MFD -> Element
+drawMFD' ctx MFD{..} = runFresh $ drawElement ctx font color draw
+
+drawMFD :: DrawContext -> Processed MFD -> Element
+drawMFD ctx = svg ctx . withFonts ctx . withBlackBackground ctx . drawMFD' ctx . mapPoint (mulBy (mfdSize ctx))

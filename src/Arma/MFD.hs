@@ -24,6 +24,7 @@ type RawColor = (Double,Double,Double,Double)
 data MFD bone col float str se p = MFD
   { color :: col
   , bones :: bone
+  , font :: Text
   , draw  :: MFDElement bone col float str se p
   }
   deriving (Show, Eq)
