@@ -105,9 +105,15 @@ drawElement scale c MFDElementGroup{..} = let
     c' = fromMaybe c mfdElementColor
     shouldShow = fromMaybe 1 mfdElementCondition > 0
     in if shouldShow then
-        g_ [makeAttribute "data-name" mfdElementName] <$> foldMap (drawElement scale c') mfdElementChildren
+        g_ [makeAttribute "data-name" mfdElementName] <$> (maybe (pure id) withClip mfdElementClip <*> foldMap (drawElement scale c') mfdElementChildren)
     else
         pure $ g_ [makeAttribute "data-name" mfdElementName, makeAttribute "data-group-empty" "true"]
+    where
+        withClip :: (Vec2, Vec2) -> Fresh (Element -> Element)
+        withClip (bl, tr) = (\fid children -> clipPath_ [Id_ <<- fid] (path_ [D_ <<- rectToPath bl tr]) <> g_ [Style_ <<- "clip-path:url(#" <> fid <> ")"] children) . ("clip" <>) . T.pack . show <$> fresh
+
+rectToPath :: Vec2 -> Vec2 -> Text
+rectToPath (V2 x1 y1) (V2 x2 y2) = mA' (V2 x1 y1) <> lA' (V2 x1 y2) <> lA' (V2 x2 y2) <> lA' (V2 x2 y1) <> lA' (V2 x1 y1)
 
 svg :: V2 Double -> Element -> Element
 svg (V2 x y) content =
@@ -120,9 +126,9 @@ withFont fontPath = (fontDef <>)
         fontDef = defs_ [] $ style_ [] $ toElement $ "@font-face {font-family: Ticketing; src: url(" <> T.pack fontPath <> ");}"
 
 withBlackBackground :: V2 Double -> Element -> Element 
-withBlackBackground (V2 x y) = (bg <>)
+withBlackBackground size = (bg <>)
     where
-        bg = path_ [Fill_<<- "black", D_ <<- (mA' (V2 0 0) <> lA' (V2 0 y) <> lA' (V2 x y) <> lA' (V2 x 0))]
+        bg = path_ [Fill_<<- "black", D_ <<- rectToPath (V2 0 0) size]
 
 mulBy :: (Additive f, Num a) => f a -> f a -> f a
 mulBy = liftU2 (*)
@@ -131,4 +137,4 @@ drawMFD' :: Double -> Processed MFD -> Element
 drawMFD' scale MFD{..} = runFresh $ drawElement scale color draw
 
 drawMFD :: String -> V2 Double -> Processed MFD -> Element
-drawMFD fontPath size@(V2 _ y) = svg size . withFont fontPath . withBlackBackground size . drawMFD' y . fmap (mulBy size)
+drawMFD fontPath size@(V2 _ y) = svg size . withFont fontPath . withBlackBackground size . drawMFD' y . mapPoint (mulBy size)

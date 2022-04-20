@@ -13,6 +13,7 @@ import           Arma.SimpleExpression
 import           Arma.Value
 import           Data.Text                      ( Text )
 import           Vec
+import           Control.Arrow
 
 type UnProcessed x = x [(Text, MFDBone)] Color FloatSource (Either Text StringSource) SimpleExpression MFDPoint
 type Processed x = x () RawColor ArmaNumber Text ArmaNumber Vec2
@@ -151,16 +152,21 @@ data MFDElement bone col float str se p = MFDElementLine {
     }
     deriving (Show, Eq)
 
-instance Functor (MFD bone col float str se) where
-    fmap f MFD{..} = MFD{draw = fmap f draw, ..}
 
-instance Functor (MFDElement bone col float str se) where
-    fmap f MFDElementLine{..} = MFDElementLine{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
-    fmap f MFDElementPolygon{..} = MFDElementPolygon{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
-    fmap f MFDElementGroup{..} = MFDElementGroup{mfdElementChildren = fmap (fmap f) mfdElementChildren, ..}
-    fmap f MFDElementText{..} = MFDElementText
-        { mfdElementTextPos = f mfdElementTextPos
-        , mfdElementTextRight = f mfdElementTextRight
-        , mfdElementTextDown = f mfdElementTextDown
-        , ..
-        }
+mapPoint :: (Vec2 -> Vec2) -> Processed MFD  -> Processed MFD
+mapPoint f MFD{..} = MFD{draw = mapPointElement f draw, ..}
+
+mapPointElement :: (Vec2 -> Vec2) -> Processed MFDElement -> Processed MFDElement
+mapPointElement f MFDElementLine{..} = MFDElementLine{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
+mapPointElement f MFDElementPolygon{..} = MFDElementPolygon{mfdElementPoints = fmap (fmap f) mfdElementPoints, ..}
+mapPointElement f MFDElementGroup{..} = MFDElementGroup
+    { mfdElementChildren = fmap (mapPointElement f) mfdElementChildren
+    , mfdElementClip = (f *** f ) <$> mfdElementClip
+    , ..
+    }
+mapPointElement f MFDElementText{..} = MFDElementText
+    { mfdElementTextPos = f mfdElementTextPos
+    , mfdElementTextRight = f mfdElementTextRight
+    , mfdElementTextDown = f mfdElementTextDown
+    , ..
+    }
