@@ -58,7 +58,7 @@ readConfigIO val = case fromArmaValue val of
 main :: IO ()
 main = do
     mLog "Reading MFD Config from file"
-    raw   <- TIO.readFile "bench/testMFD.txt"
+    raw   <- TIO.readFile "reference/mpd.txt"
 
     mLog "Parsing arma value from file"
     armaVal   <- parseIO parseArmaValue raw

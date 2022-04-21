@@ -4,6 +4,6 @@ import qualified Data.Text.IO                  as TIO
 import           Text.Megaparsec
 
 main = do
-  text <- TIO.readFile "bench/testMFD.txt"
+  text <- TIO.readFile "reference/mpd.txt"
   seq text $ defaultMain
     [bench "Parsing ArmaValue" $ whnf (runParser parseArmaValue "") text]
