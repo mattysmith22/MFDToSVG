@@ -15,12 +15,6 @@ import           Arma.MFD.Sources.With
 import           Data.Bool (bool)
 import Arma.MFD.Sources.Values (SourceValues)
 
-boolSources :: Set.Set Text
-boolSources = Set.fromList ["on"]
-
-floatSources :: Set.Set Text
-floatSources = Set.fromList ["altitudeAGL"]
-
 performBinOp :: BinOp -> ArmaNumber -> ArmaNumber -> ArmaNumber
 performBinOp OpMul  l r = l * r
 performBinOp OpDiv  l r = if r == 0 then 0 else l / r
@@ -46,10 +40,7 @@ evalSimpleExpression'
 evalSimpleExpression' x= WithSource (eval' x)
     where
         eval' :: SimpleExpression -> (forall arr. WithSources arr => arr () ArmaNumber)
-        eval' (Ident ident) = case readSimpleExpressionSource ident of
-            Nothing -> arr $ const 0
-            Just (Left boolSrc) -> arr (bool 1 0) . getBool boolSrc
-            Just (Right floatSrc) -> getFloat floatSrc
+        eval' (Ident ident) = getFloat (readSimpleExpressionSource ident)
         eval' (NumLit x) = arr $ const x
         eval' (BinOp op l r) =
             arr (uncurry $ performBinOp op)
@@ -63,12 +54,9 @@ evalSimpleExpression
   -> ArmaNumber
 evalSimpleExpression = runWithSource . evalSimpleExpression'
 
-readSimpleExpressionSource :: Ident -> Maybe (Either BoolSource FloatSource)
+readSimpleExpressionSource :: Ident -> FloatSource
 readSimpleExpressionSource (T.stripPrefix "user" -> Just num) =
   case TR.decimal num of
-    (Left  err     ) -> Nothing
-    (Right (val, _)) -> Just $ Right $ FloatSourceUser val
-readSimpleExpressionSource name
-  | name `Set.member` boolSources  = Just $ Left $ BoolSource name
-  | name `Set.member` floatSources = Just $ Right $ FloatSource name
-  | otherwise                      = Nothing
+    (Left  _) -> FloatSource $ "user" <> num
+    (Right (val, _)) -> FloatSourceUser val
+readSimpleExpressionSource name = FloatSource name

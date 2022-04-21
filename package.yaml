@@ -49,6 +49,8 @@ executables:
     dependencies:
     - MFDtoSVG
     - threepenny-gui
+    - directory
+    - filepath
     default-extensions: OverloadedStrings  
 
 tests:

@@ -26,25 +26,28 @@ addBoolReq :: BoolSource -> SourceDeps -> SourceDeps
 addBoolReq source (f, s, b) = (f, s, source `Set.insert` b)
 
 newtype SourceDepArr a b = SourceDepArr {
-  runSourceDepArr :: SourceDeps -> SourceDeps
+  runSourceDepArr' :: Maybe Int -> SourceDeps -> SourceDeps
 }
 
+runSourceDepArr :: SourceDepArr a b -> SourceDeps -> SourceDeps
+runSourceDepArr x = runSourceDepArr' x Nothing
 instance Category SourceDepArr where
-  l . r = SourceDepArr $ runSourceDepArr l . runSourceDepArr r
-  id = SourceDepArr id
+  l . r = SourceDepArr $ \mInd -> runSourceDepArr' l mInd . runSourceDepArr' r mInd
+  id = SourceDepArr $ const id
 
 instance Arrow SourceDepArr where
-  arr _ = SourceDepArr id
+  arr _ = SourceDepArr $ const id
   
-  l *** r = SourceDepArr $ runSourceDepArr l . runSourceDepArr r
+  l *** r = SourceDepArr $ \mInd -> runSourceDepArr' l mInd . runSourceDepArr' r mInd
 
 instance ArrowChoice SourceDepArr where
-  l +++ r = SourceDepArr $ runSourceDepArr l . runSourceDepArr r
+  l +++ r = SourceDepArr $ \mInd -> runSourceDepArr' l mInd . runSourceDepArr' r mInd
 
 instance WithSources SourceDepArr where
-  getFloat src = SourceDepArr $ addFloatReq src
-  getString src = SourceDepArr $ addStringReq src
-  getBool src = SourceDepArr $ addBoolReq src
+  getFloat src = SourceDepArr $ \mInd deps -> flip addFloatReq deps $ maybe id FloatSourcePylon mInd src
+  getString src = SourceDepArr $ \mInd deps -> flip addStringReq deps $ maybe id StringSourcePylon mInd src
+  getBool src = SourceDepArr $ \mInd deps -> flip addBoolReq deps $ maybe id BoolSourcePylon mInd src
+  underPylon n x = SourceDepArr $ const $ runSourceDepArr' x (Just n)
 
 getSourceDependencies :: WithSource a -> SourceDeps
 getSourceDependencies (WithSource a) = runSourceDepArr a mempty

@@ -6,6 +6,7 @@ Description : Parses a full MFD from config.
 {-#LANGUAGE TupleSections#-}
 module Arma.MFD.Parser
   ( parseMfd
+  , parsePylonMfd
   , MFDParserError(..)
   , Parser
   ) where
@@ -25,3 +26,10 @@ parseMfd = do
   font <- readString "font"
   elements <- onSubConfig "Draw" (parseGroup "<root>")
   return (MFD color bones font elements)
+
+parsePylonMfd :: Parser (UnProcessed PylonMFD)
+parsePylonMfd = do
+  bones <- onSubConfig "Bones"
+    $ onSubConfigs' (\ident -> (ident, ) <$> parseBone)
+  elements <- onSubConfig "Draw" (parseGroup "<root>")
+  return (PylonMFD bones elements)

@@ -16,19 +16,21 @@ import Arma.MFD.Sources.Key (SourceKey(toSourceKey))
 import Text.Megaparsec
 import Data.Void (Void)
 import Arma.Config.Parser (ConfigParser, runConfigParser)
-import Arma.MFD.Parser (MFDParserError, parseMfd)
+import Arma.MFD.Parser (MFDParserError, parseMfd, parsePylonMfd)
 import Arma.Value (ArmaValue)
 import System.Exit
 import Arma.Config (fromArmaValue, Config)
 import Arma.Value.Parser (parseArmaValue)
-import Arma.MFD.Process (process)
+import Arma.MFD.Process (process, ProcessingContext(..))
 import Arma.MFD
 import Graphics.Svg (renderText)
 import Arma.MFD.Draw
 import Arma.MFD.Sources.With (runWithSource)
 import Linear (V2(V2))
 import Data.Maybe (fromMaybe)
-import Control.Monad (void, unless)
+import Control.Monad (void, unless, filterM, forM)
+import System.Directory
+import System.FilePath
 
 mLog :: Text -> IO ()
 mLog x = TIO.putStrLn $ "[MFDtoSVG] " <> x
@@ -55,26 +57,41 @@ readConfigIO val = case fromArmaValue val of
     exitWith (ExitFailure 1)
   (Right x) -> return x
 
+getProcessCtx :: FilePath -> IO ProcessingContext
+getProcessCtx pylonsDir = do
+    pylonTypes <- listDirectory pylonsDir >>= filterM (doesDirectoryExist . (pylonsDir </>))
+    mLog $ T.pack $ show pylonTypes
+    parsedTypes <- forM pylonTypes $ \pylonType -> do
+        let typeDir = pylonsDir </> pylonType
+        magazines <- listDirectory typeDir
+        mLog $ T.pack $ show magazines
+        parsedMagazines <- forM magazines $ \magFile -> do
+            let magPath = typeDir </> magFile
+            mLog $ "Reading pylon config " <> T.pack magPath
+            config <- TIO.readFile magPath >>= parseIO parseArmaValue >>= readConfigIO >>= parseConfigIO parsePylonMfd
+            return (T.pack $ dropExtensions magFile, config)
+        return (T.pack pylonType, Map.fromList parsedMagazines)
+    let pylons = Map.fromList parsedTypes
+
+    return $ ProcessingContext pylons
+
 main :: IO ()
 main = do
     mLog "Reading MFD Config from file"
     raw   <- TIO.readFile "reference/mpd.txt"
-
-    mLog "Parsing arma value from file"
     armaVal   <- parseIO parseArmaValue raw
-
-    mLog "Parsing arma config from arma value"
     config    <- readConfigIO armaVal
-
-    mLog "Parsing MFD config from arma config"
     mfdConfig <- parseConfigIO parseMfd config
 
-    mLog "Starting server"
-    startGUI defaultConfig (setup mfdConfig)
+    mLog "Getting processing context"
+    processCtx <- getProcessCtx "reference/pylons"
 
-setup :: UnProcessed MFD -> Window -> UI ()
-setup mfd w = mdo
-    let deps = getSourceDependencies $ process mfd
+    mLog "Starting server"
+    startGUI defaultConfig (setup processCtx mfdConfig)
+
+setup :: ProcessingContext -> UnProcessed MFD -> Window -> UI ()
+setup processCtx mfd w = mdo
+    let deps = getSourceDependencies $ process processCtx mfd
     ticketingUrl <- loadFile "application/octet-stream" "/home/mbs/Downloads/ticketing/ticketing/TICKETING/Ticketing.ttf"
 
     let drawConf = DrawContext
@@ -90,7 +107,7 @@ setup mfd w = mdo
 
     hookup
     let drawWithSource sources = do
-            let processedMFD = runWithSource (process mfd) sources
+            let processedMFD = runWithSource (process processCtx mfd) sources
             let svg = TL.unpack $ renderText $ drawMFD drawConf processedMFD
             runFunction (setResult svg)
         

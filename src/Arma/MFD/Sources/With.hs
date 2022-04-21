@@ -12,30 +12,35 @@ class ArrowChoice a => WithSources a where
     getFloat :: FloatSource -> a b Double 
     getString :: StringSource -> a b Text
     getBool :: BoolSource  -> a b Bool
+    underPylon :: Int -> a b c -> a b c
 
 newtype SourceArr a b = SourceArr {
-    runSourceArr :: SourceValues -> a -> b
+    runSourceArr' :: Maybe Int -> SourceValues -> a -> b
 }
 
-instance Category SourceArr where
-    l . r = SourceArr $ \vals -> runSourceArr l vals . runSourceArr r vals
+runSourceArr :: SourceArr a b -> SourceValues -> a -> b
+runSourceArr x = runSourceArr' x Nothing
 
-    id = SourceArr $ const id
+instance Category SourceArr where
+    l . r = SourceArr $ \mInd vals -> runSourceArr' l mInd vals . runSourceArr' r mInd vals
+
+    id = SourceArr $ const $ const id
 
 instance Arrow SourceArr where
-    arr = SourceArr . const
+    arr = SourceArr . const . const
 
-    lArr *** rArr = SourceArr $ \vals (l, r) ->
-        (runSourceArr lArr vals l, runSourceArr rArr vals r)
+    lArr *** rArr = SourceArr $ \mInd vals (l, r) ->
+        (runSourceArr' lArr mInd vals l, runSourceArr' rArr mInd vals r)
 
 instance ArrowChoice SourceArr where
-    l +++ r = SourceArr $ \vals -> \case
-        (Left lVal) -> Left $ runSourceArr l vals lVal
-        (Right rVal) -> Right $ runSourceArr r vals rVal
+    l +++ r = SourceArr $ \mInd vals -> \case
+        (Left lVal) -> Left $ runSourceArr' l mInd vals lVal
+        (Right rVal) -> Right $ runSourceArr' r mInd vals rVal
 instance WithSources SourceArr where
-    getFloat src = SourceArr $ \vals _ -> getFloatValue vals src
-    getString src = SourceArr $ \vals _ -> getStringValue vals src
-    getBool src = SourceArr $ \vals _ -> getBoolValue vals src
+    getFloat src = SourceArr $ \mPylon vals x -> getFloatValue vals $ maybe id FloatSourcePylon mPylon src
+    getString src = SourceArr $ \mPylon vals x -> getStringValue vals $ maybe id StringSourcePylon mPylon src
+    getBool src = SourceArr $ \mPylon vals x -> getBoolValue vals $ maybe id BoolSourcePylon mPylon src
+    underPylon n arr = SourceArr $ \_ vals x -> runSourceArr' arr (Just n) vals x
 
 data WithSource a where
     WithSource :: (forall arr. WithSources arr => arr () a) -> WithSource a

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d8c98c2e39dd6ea62c26b761004cd58f1500bdc34c26da879c96ea74ebab6057
+-- hash: 602fc0c8e9ad41423b87fe13e2de4e04f2293c7b0d7f6a06de49108aafa146f9
 
 name:           MFDtoSVG
 version:        0.1.0.0
@@ -80,7 +80,9 @@ executable MFDtoSVG-exe
     , aeson
     , base >=4.7 && <5
     , containers
+    , directory
     , extra
+    , filepath
     , linear
     , megaparsec
     , parser-combinators

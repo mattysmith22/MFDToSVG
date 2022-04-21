@@ -26,6 +26,7 @@ parseElement name = do
     "line"      -> parseLine name
     "polygon"   -> parsePolygon name
     "text"      -> parseText name
+    "pylonicon"     -> parsePylon name
     --"scale" -> parseScale TODO: Implement scale
     invalidType -> return $ MFDElementGroup invalidType [] Nothing Nothing Nothing Nothing-- userConfigError (InvalidType invalidType) ["type"] 
 
@@ -44,6 +45,17 @@ parseGroup name = do
                            , mfdElementClip      = (,) <$> clipTL <*> clipBR
                            , mfdElementCondition = condition
                            }
+parsePylon :: Text -> Parser (UnProcessed MFDElement)
+parsePylon name = do
+  pos <- readArray "pos" >>= toPointTransform ["pos"]
+  pylonIndex <- round <$> readNumber "pylon"
+  pylonType <- readString "name"
+  return MFDElementPylon
+    { mfdElementName = name
+    , mfdElementPos = pos
+    , mfdElementPylonIndex = pylonIndex
+    , mfdElementPylonType = pylonType
+    }
 
 readLineType :: Text -> Parser LineType
 readLineType ident = do

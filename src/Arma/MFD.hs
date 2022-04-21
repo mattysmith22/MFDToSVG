@@ -20,6 +20,11 @@ type Processed x = x () RawColor ArmaNumber Text ArmaNumber Vec2
 
 type RawColor = (Double,Double,Double,Double)
 
+data PylonMFD bone col float str se p = PylonMFD
+    { pylonBones :: bone
+    , pylonDraw :: MFDElement bone col float str se p
+    }
+
 -- | Full MFD representation
 data MFD bone col float str se p = MFD
   { color :: col
@@ -58,15 +63,19 @@ data MFDBone = Fixed Vec2
 -- | Valid float source
 data FloatSource = FloatSource Text
     | FloatSourceUser Int
+    | FloatSourcePylon Int FloatSource
     deriving (Show, Eq, Ord)
 
 -- | Valid string source
 data StringSource = StringSource Text
     | StringSourceTime Text
     | StringSourceUser Int
+    | StringSourcePylon Int StringSource
+    | StringSourcePylonMag Int
     deriving (Show, Eq, Ord)
 
-newtype BoolSource = BoolSource Text
+data BoolSource = BoolSource Text
+    | BoolSourcePylon Int BoolSource
     deriving (Show, Eq, Ord)
 
 -- | A point on the MFD, defined as a series of transformations
@@ -151,6 +160,12 @@ data MFDElement bone col float str se p = MFDElementLine {
         mfdElementClip :: Maybe (Vec2, Vec2),
         mfdElementCondition :: Maybe se
     }
+    | MFDElementPylon {
+        mfdElementName :: Text,
+        mfdElementPos :: p,
+        mfdElementPylonIndex :: Int,
+        mfdElementPylonType :: Text
+    }
     deriving (Show, Eq)
 
 
@@ -169,5 +184,9 @@ mapPointElement f MFDElementText{..} = MFDElementText
     { mfdElementTextPos = f mfdElementTextPos
     , mfdElementTextRight = f mfdElementTextRight
     , mfdElementTextDown = f mfdElementTextDown
+    , ..
+    }
+mapPointElement f MFDElementPylon{..} = MFDElementPylon
+    { mfdElementPos = f mfdElementPos
     , ..
     }
