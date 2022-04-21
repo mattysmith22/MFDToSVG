@@ -38,16 +38,23 @@ exprP = makeExprParser
   , [Prefix (UnOp OpDeg <$ symbol "deg"), Prefix (UnOp OpRad <$ symbol "rad")]
   , [InfixL (BinOp OpMul <$ symbol "*"), InfixL (BinOp OpDiv <$ symbol "/")]
   , [InfixL (BinOp OpAdd <$ symbol "+"), InfixL (BinOp OpSub <$ symbol "-")]
-  , [InfixN (BinOp OpLess <$ symbol "<"), InfixL (BinOp OpMore <$ symbol ">")]
+  , [InfixN (BinOp OpLess <$ symbol "<"), InfixL (BinOp OpMore <$ symbol ">"), InfixN (BinOp OpLessEq <$ symbol "<="), InfixL (BinOp OpMoreEq <$ symbol ">=")]
+  , [Prefix (UnOp OpAbs <$ symbol "abs")]
+  , [InfixL (BinOp OpMin <$ symbol "min"), InfixL (BinOp OpMin <$ symbol "max")]
+  , [ Postfix (Factor <$> (symbol "factor" *> symbol "[" *> num) <*> (symbol "," *> num <* symbol "]"))
+    , Postfix (Interpolate <$> (symbol "interpolate" *> symbol "[" *> num) <*> (symbol "," *> num) <*> (symbol "," *> num) <*> (symbol "," *> num <* symbol "]"))
+    ]
   ]
+
+num :: Parsec Void Text Double
+num = CL.signed (return ()) (try CL.float <|> CL.decimal)
 
 -- | Parses an arma value from input string
 termP :: Parsec Void Text SimpleExpression
 termP =
   tok
     $ let brackets = between (symbol "(") (symbol ")") exprP
-          number =
-            NumLit <$> CL.signed (return ()) (try CL.float <|> CL.decimal)
+          number = NumLit <$> num
 
           firstIdentChar x = isAlpha x || x == '_'
           restIdentChar x = isAlphaNum x || x == '_'

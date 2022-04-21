@@ -14,6 +14,7 @@ import           Prelude hiding ((.))
 import           Arma.MFD.Sources.With
 import           Data.Bool (bool)
 import Arma.MFD.Sources.Values (SourceValues)
+import Vec (clamp)
 
 performBinOp :: BinOp -> ArmaNumber -> ArmaNumber -> ArmaNumber
 performBinOp OpMul  l r = l * r
@@ -21,7 +22,11 @@ performBinOp OpDiv  l r = if r == 0 then 0 else l / r
 performBinOp OpAdd  l r = l + r
 performBinOp OpSub  l r = l - r
 performBinOp OpLess l r = if l < r then 1 else 0
+performBinOp OpLessEq l r = if l <= r then 1 else 0
 performBinOp OpMore l r = if l > r then 1 else 0
+performBinOp OpMoreEq l r = if l >= r then 1 else 0
+performBinOp OpMin l r = l `min` r
+performBinOp OpMax l r = l `max` r
 
 degToRad :: ArmaNumber -> ArmaNumber
 degToRad x = x * pi / 180
@@ -30,10 +35,14 @@ radToDeg :: ArmaNumber -> ArmaNumber
 radToDeg x = x / pi * 180
 
 performUnOp :: UnOp -> ArmaNumber -> ArmaNumber
-performUnOp OpNeg x = negate x
-performUnOp OpDeg x = radToDeg x
-performUnOp OpRad x = degToRad x
+performUnOp OpNeg = negate
+performUnOp OpDeg = radToDeg
+performUnOp OpRad = degToRad
+performUnOp OpAbs = abs
 
+-- r = x * (to - from) + from
+-- r - from = x * (to - from)
+-- (r - from) / (to - from) = x
 evalSimpleExpression'
   :: SimpleExpression
   -> WithSource ArmaNumber
@@ -47,6 +56,12 @@ evalSimpleExpression' x= WithSource (eval' x)
             . (eval' l &&& eval' r )
         eval' (UnOp op x) =
             arr (performUnOp op) . eval' x 
+        eval' (Factor from to expr) =
+            arr (clamp 0 1 . factor from to) . eval' expr
+        eval' (Interpolate xFrom xTo resFrom resTo expr) =
+            arr (\x -> factor xFrom xTo x * (resTo - resFrom) + resFrom) . eval' expr
+
+        factor from to x = (x-from) / (to-from)
 
 evalSimpleExpression
   :: SimpleExpression

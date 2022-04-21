@@ -17,12 +17,17 @@ data BinOp
     | OpAdd
     | OpSub
     | OpLess
+    | OpLessEq
+    | OpMoreEq
+    | OpMin
+    | OpMax
     | OpMore
     deriving (Show, Eq)
 
 data UnOp = OpNeg
   | OpDeg
   | OpRad
+  | OpAbs
   deriving (Show, Eq)
 
 -- | AST representing a simple expression
@@ -31,4 +36,6 @@ data SimpleExpression
     | NumLit ArmaNumber
     | BinOp BinOp SimpleExpression SimpleExpression
     | UnOp UnOp SimpleExpression
+    | Factor ArmaNumber ArmaNumber SimpleExpression
+    | Interpolate ArmaNumber ArmaNumber ArmaNumber ArmaNumber SimpleExpression
     deriving (Show, Eq)
