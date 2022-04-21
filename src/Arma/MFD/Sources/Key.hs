@@ -46,12 +46,6 @@ instance SourceKey StringSource where
         <|> (uncurry StringSourcePylon <$> parsePylonPrefix "$pylon" x)
         <|> (StringSourceUser <$> parseUserPrefix "user" x)
         <|> (StringSourceTime <$> T.stripPrefix "time$" x)
-instance SourceKey BoolSource where
-    toSourceKey (BoolSource x) = x
-    toSourceKey (BoolSourcePylon n x) = "$pylon" <> T.pack (show n) <> "$" <> toSourceKey x
-
-    fromSourceKey x = maybe (BoolSource x) (uncurry BoolSourcePylon) $ parsePylonPrefix "$pylon" x
-
 
 instance SourceKey a => ToJSONKey a where
     toJSONKey = ToJSONKeyText toSourceKey (text . toSourceKey)

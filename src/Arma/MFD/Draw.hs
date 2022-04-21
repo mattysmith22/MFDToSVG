@@ -70,7 +70,7 @@ strokeWidthFudgeFactor :: Double
 strokeWidthFudgeFactor = 0.001
 
 textDrawFudgeFactor :: V2 Double 
-textDrawFudgeFactor = V2 0.15 0.15
+textDrawFudgeFactor = V2 0.3 0.15
 
 drawElement :: DrawContext -> Text -> RawColor -> Processed MFDElement -> Fresh Element
 drawElement ctx _ c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
@@ -91,9 +91,9 @@ drawElement DrawContext{..} font c MFDElementText{..} = let
             TextAlignRight -> "start"
 
         fudgeMultiplier = case mfdElementAlign of
-            TextAlignLeft -> V2 1 1
+            TextAlignLeft -> V2 0 1
             TextAlignCenter -> V2 0 1
-            TextAlignRight -> V2 (-1) 1
+            TextAlignRight -> V2 0 1
 
         fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* height)
 
@@ -119,6 +119,7 @@ drawElement ctx font c MFDElementGroup{..} = let
     where
         withClip :: (Vec2, Vec2) -> Fresh (Element -> Element)
         withClip (bl, tr) = (\fid children -> clipPath_ [Id_ <<- fid] (path_ [D_ <<- rectToPath bl tr]) <> g_ [Style_ <<- "clip-path:url(#" <> fid <> ")"] children) . ("clip" <>) . T.pack . show <$> fresh
+drawElement _ _ _ MFDElementPylon{..} = error "Cannot draw MFDElementPylon, this should have been processed into a MFDElementGroup"
 
 rectToPath :: Vec2 -> Vec2 -> Text
 rectToPath (V2 x1 y1) (V2 x2 y2) = mA' (V2 x1 y1) <> lA' (V2 x1 y2) <> lA' (V2 x2 y2) <> lA' (V2 x2 y1) <> lA' (V2 x1 y1)

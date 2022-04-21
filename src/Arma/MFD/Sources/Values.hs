@@ -13,8 +13,7 @@ import           GHC.Generics (Generic)
 
 data SourceValues = SourceValues {
     floatValues :: Map FloatSource Double,
-    stringValues :: Map StringSource Text,
-    boolValues :: Map BoolSource Bool
+    stringValues :: Map StringSource Text
 }
     deriving (Show, Ord, Eq, Generic)
 
@@ -23,17 +22,15 @@ instance ToJSON SourceValues
 instance Semigroup SourceValues where
     l <> r = SourceValues {
         floatValues = floatValues l <> floatValues r,
-        stringValues = stringValues l <> stringValues r,
-        boolValues = boolValues l <> boolValues r
+        stringValues = stringValues l <> stringValues r
     }
 
 instance Monoid SourceValues where
-    mempty = SourceValues mempty mempty mempty
+    mempty = SourceValues mempty mempty
 
 mkSourceValues
     :: Map FloatSource Double 
     -> Map StringSource Text
-    -> Map BoolSource Bool
     -> SourceValues
 mkSourceValues = SourceValues
 
@@ -42,6 +39,3 @@ getFloatValue SourceValues{..} = fromMaybe 0 . flip Map.lookup floatValues
 
 getStringValue :: SourceValues -> StringSource -> Text
 getStringValue SourceValues{..} = fromMaybe "" . flip Map.lookup stringValues
-
-getBoolValue :: SourceValues -> BoolSource -> Bool
-getBoolValue SourceValues{..} = fromMaybe False . flip Map.lookup boolValues

@@ -14,16 +14,13 @@ import           Arma.MFD.Sources.With
 import           Arma.MFD.Sources.Values
 
 type SourceDeps
-  = (Set.Set FloatSource, Set.Set StringSource, Set.Set BoolSource)
+  = (Set.Set FloatSource, Set.Set StringSource)
 
 addFloatReq :: FloatSource -> SourceDeps -> SourceDeps
-addFloatReq source (f, s, b) = (source `Set.insert` f, s, b)
+addFloatReq source (f, s) = (source `Set.insert` f, s)
 
 addStringReq :: StringSource -> SourceDeps -> SourceDeps
-addStringReq source (f, s, b) = (f, source `Set.insert` s, b)
-
-addBoolReq :: BoolSource -> SourceDeps -> SourceDeps
-addBoolReq source (f, s, b) = (f, s, source `Set.insert` b)
+addStringReq source (f, s) = (f, source `Set.insert` s)
 
 newtype SourceDepArr a b = SourceDepArr {
   runSourceDepArr' :: Maybe Int -> SourceDeps -> SourceDeps
@@ -46,17 +43,15 @@ instance ArrowChoice SourceDepArr where
 instance WithSources SourceDepArr where
   getFloat src = SourceDepArr $ \mInd deps -> flip addFloatReq deps $ maybe id FloatSourcePylon mInd src
   getString src = SourceDepArr $ \mInd deps -> flip addStringReq deps $ maybe id StringSourcePylon mInd src
-  getBool src = SourceDepArr $ \mInd deps -> flip addBoolReq deps $ maybe id BoolSourcePylon mInd src
   underPylon n x = SourceDepArr $ const $ runSourceDepArr' x (Just n)
 
 getSourceDependencies :: WithSource a -> SourceDeps
 getSourceDependencies (WithSource a) = runSourceDepArr a mempty
 
 defaultValues :: SourceDeps -> SourceValues
-defaultValues (floatDeps, stringDeps, boolDeps) = SourceValues {
+defaultValues (floatDeps, stringDeps) = SourceValues {
     floatValues = toMap floatDeps 0,
-    stringValues = toMap stringDeps "",
-    boolValues = toMap boolDeps False
+    stringValues = toMap stringDeps ""
 }
   where
       toMap deps defVal = Map.fromList $ map (,defVal) $ Set.toList deps

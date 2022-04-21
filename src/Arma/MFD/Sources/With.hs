@@ -11,7 +11,6 @@ import Data.Text (Text)
 class ArrowChoice a => WithSources a where
     getFloat :: FloatSource -> a b Double 
     getString :: StringSource -> a b Text
-    getBool :: BoolSource  -> a b Bool
     underPylon :: Int -> a b c -> a b c
 
 newtype SourceArr a b = SourceArr {
@@ -39,7 +38,6 @@ instance ArrowChoice SourceArr where
 instance WithSources SourceArr where
     getFloat src = SourceArr $ \mPylon vals x -> getFloatValue vals $ maybe id FloatSourcePylon mPylon src
     getString src = SourceArr $ \mPylon vals x -> getStringValue vals $ maybe id StringSourcePylon mPylon src
-    getBool src = SourceArr $ \mPylon vals x -> getBoolValue vals $ maybe id BoolSourcePylon mPylon src
     underPylon n arr = SourceArr $ \_ vals x -> runSourceArr' arr (Just n) vals x
 
 data WithSource a where

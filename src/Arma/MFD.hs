@@ -74,10 +74,6 @@ data StringSource = StringSource Text
     | StringSourcePylonMag Int
     deriving (Show, Eq, Ord)
 
-data BoolSource = BoolSource Text
-    | BoolSourcePylon Int BoolSource
-    deriving (Show, Eq, Ord)
-
 -- | A point on the MFD, defined as a series of transformations
 type MFDPoint = [MFDPointTransform]
 

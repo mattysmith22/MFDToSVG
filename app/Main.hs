@@ -123,19 +123,17 @@ promoteUp :: (a -> b) -> (a -> b -> a) -> Event (b -> b) -> Event (a -> a)
 promoteUp getter setter = fmap (\f x -> setter x (f $ getter x))
 
 setupDeps :: SourceDeps -> Behavior SourceValues -> UI (UI Element, SourceValues, Event (SourceValues -> SourceValues), UI ())
-setupDeps deps@(floatDeps, stringDeps, boolDeps) unpBeh = do
+setupDeps deps@(floatDeps, stringDeps) unpBeh = do
 
         (floatElems, floatEvt, floatHookup) <- rowsForDict (Set.toList floatDeps) (T.unpack . toSourceKey) floatVal 0 (floatValues <$> unpBeh)
         (stringElems, stringEvt, stringHookup) <- rowsForDict (Set.toList stringDeps) (T.unpack . toSourceKey) stringVal "" (stringValues <$> unpBeh)
-        (boolElems, boolEvt, boolHookup) <- rowsForDict (Set.toList boolDeps) (T.unpack . toSourceKey) boolVal False (boolValues <$> unpBeh)
 
         let floatEvt' = promoteUp floatValues (\x f -> x {floatValues = f}) floatEvt
         let stringEvt' = promoteUp stringValues (\x s -> x {stringValues = s}) stringEvt
-        let boolEvt' = promoteUp boolValues (\x b -> x {boolValues = b}) boolEvt
 
-        let hookup = floatHookup >> stringHookup >> boolHookup
+        let hookup = floatHookup >> stringHookup
 
-        let aggEvt = concatenate <$> unions [floatEvt', stringEvt', boolEvt']
+        let aggEvt = concatenate <$> unions [floatEvt', stringEvt']
 
         let floatTable = UI.table #+
                 ( UI.th #+ [UI.tr # set text "Float Source", UI.tr]
@@ -145,15 +143,10 @@ setupDeps deps@(floatDeps, stringDeps, boolDeps) unpBeh = do
                 ( UI.th #+ [UI.tr # set text "String Source", UI.tr]
                 : stringElems
                 )
-        let boolTable = UI.table #+
-                ( UI.th #+ [UI.tr # set text "Bool Source", UI.tr]
-                : boolElems
-                )
 
         let elemt = UI.table #+ [UI.tr #+
                 [ UI.td #+ [floatTable]
                 , UI.td #+ [stringTable]
-                , UI.td #+ [boolTable]
                 ]]
         return (elemt, defaultValues deps, aggEvt, hookup)
     where
@@ -190,10 +183,4 @@ setupDeps deps@(floatDeps, stringDeps, boolDeps) unpBeh = do
         stringVal beh = do
             inp <- UI.input # set UI.type_ "text" # sink UI.value (T.unpack <$> beh)
             let evt = const . T.pack <$> UI.valueChange inp 
-            return (inp, evt, return ())
-
-        boolVal :: Behavior Bool -> UI (Element, Event (Bool -> Bool), UI ())
-        boolVal beh = do
-            inp <- UI.input # set UI.type_ "checkbox" # sink UI.checked beh
-            let evt = const <$> UI.checkedChange inp
             return (inp, evt, return ())
