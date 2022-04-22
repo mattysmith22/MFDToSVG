@@ -83,6 +83,8 @@ drawElement ctx _ c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mf
 -- TODO: Draw text
 drawElement DrawContext{..} font c MFDElementText{..} = let
         height = norm (mfdElementTextPos ^-^ mfdElementTextDown)
+        widthVec = norm (mfdElementTextPos ^-^ mfdElementTextRight)
+        aspect = widthVec / height
         dim = T.pack (show height) <> "px"
 
         anchor = case mfdElementAlign of
@@ -99,9 +101,19 @@ drawElement DrawContext{..} font c MFDElementText{..} = let
 
         fontName = fromMaybe font $ Map.lookup font armaFontMappings
 
+        transform = "scale(" <> T.pack (show aspect) <> ", 1)"
+
+        --The "scale() transform also affects the coordinate, so we need to counteract that"
+        finalPos = mulBy (V2 (recip aspect) 1) $ mfdElementTextPos + fudge
         element = text_
-            ([Fill_ <<- col c, Font_family_ <<- fontName, Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor, Font_size_ <<- dim, makeAttribute "data-name" mfdElementName] ++ textCoord (mfdElementTextPos ^+^ fudge))
-            (toElement mfdElementSource)
+            ([Fill_ <<- col c, Font_family_ <<- fontName
+                , Dominant_baseline_ <<- "hanging", Text_anchor_ <<- anchor
+                , Style_ <<- "white-space: pre; text-rendering: geometricPrecision"
+                , Font_size_ <<- dim, Transform_ <<- transform
+                , makeAttribute "data-name" mfdElementName]
+            ++ textCoord finalPos)
+
+            (toElement (T.replace " " "\x00A0\x00A0" mfdElementSource)) --Replace with NBSP to prevent them being removed
     in pure element
 drawElement _ _ c MFDElementPolygon{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toPoly $ filter ((>1) . length) mfdElementPoints
