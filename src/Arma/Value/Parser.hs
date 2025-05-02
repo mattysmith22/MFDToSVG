@@ -19,6 +19,7 @@ import           Data.Void
 
 import           Arma.Value
 import           Data.Text                      ( Text )
+import qualified Data.Text as T
 
 tok :: Parsec Void Text a -> Parsec Void Text a
 tok = lexeme (void $ takeWhileP (Just "space") isSpace)
@@ -38,7 +39,7 @@ parseArmaString = tok $ ArmaString <$> stringParser
  where
   stringParser   = between stringTok stringTok stringContents
   stringTok      = char '"'
-  stringContents = takeWhileP (Just "string contents") (/= '"')
+  stringContents = T.concat <$> many (takeWhile1P (Just "string contents") (/= '"') <|> chunk ("\"\""::Text))
 {-# INLINE parseArmaString #-}
 
 parseArmaArray :: Parsec Void Text ArmaValue

@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 module Arma.MFD.Sources.Key (SourceKey(..)) where
 
+import           Data.Aeson
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Read as TR
@@ -13,6 +15,12 @@ import Data.Maybe (fromMaybe)
 class SourceKey k where
     toSourceKey :: k -> Text
     fromSourceKey :: Text -> k
+
+instance ToJSON FloatSource where
+    toJSON = toJSON . toSourceKey
+
+instance ToJSON StringSource where
+    toJSON = toJSON . toSourceKey
 
 rightToMaybe :: Either a b -> Maybe b
 rightToMaybe = either (const Nothing) Just

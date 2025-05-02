@@ -1,5 +1,7 @@
 {-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE RecordWildCards #-}
 module Main(main) where
+
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core
 import Arma.MFD.Sources.Depends
@@ -123,7 +125,7 @@ promoteUp :: (a -> b) -> (a -> b -> a) -> Event (b -> b) -> Event (a -> a)
 promoteUp getter setter = fmap (\f x -> setter x (f $ getter x))
 
 setupDeps :: SourceDeps -> Behavior SourceValues -> UI (UI Element, SourceValues, Event (SourceValues -> SourceValues), UI ())
-setupDeps deps@(floatDeps, stringDeps) unpBeh = do
+setupDeps deps@SourceDeps{..} unpBeh = do
 
         (floatElems, floatEvt, floatHookup) <- rowsForDict (Set.toList floatDeps) (T.unpack . toSourceKey) floatVal 0 (floatValues <$> unpBeh)
         (stringElems, stringEvt, stringHookup) <- rowsForDict (Set.toList stringDeps) (T.unpack . toSourceKey) stringVal "" (stringValues <$> unpBeh)

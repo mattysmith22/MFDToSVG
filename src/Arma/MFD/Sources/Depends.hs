@@ -1,8 +1,9 @@
-{-# LANGUAGE FlexibleInstances, TupleSections #-}
-module Arma.MFD.Sources.Depends(SourceDeps, getSourceDependencies, defaultValues) where
+{-# LANGUAGE FlexibleInstances, TupleSections, DeriveGeneric #-}
+module Arma.MFD.Sources.Depends(SourceDeps(..), getSourceDependencies, defaultValues) where
 
 import           Arma.MFD
 import           Arma.SimpleExpression
+import           Data.Aeson
 import qualified Data.Set                      as Set
 import qualified Data.Map                      as Map
 import           Data.Text                      ( Text )
@@ -12,15 +13,31 @@ import           Control.Arrow
 import           Prelude hiding ((.), id)
 import           Arma.MFD.Sources.With
 import           Arma.MFD.Sources.Values
+import           GHC.Generics
 
-type SourceDeps
-  = (Set.Set FloatSource, Set.Set StringSource)
+data SourceDeps = SourceDeps
+  { floatDeps :: Set.Set FloatSource
+  , stringDeps :: Set.Set StringSource
+  }
+  deriving Generic
+
+instance Semigroup SourceDeps where
+    l <> r = SourceDeps
+      { floatDeps = floatDeps l <> floatDeps r
+      , stringDeps = stringDeps l <> stringDeps r
+      }
+
+instance ToJSON SourceDeps where
+    toEncoding = genericToEncoding defaultOptions
+
+instance Monoid SourceDeps where
+  mempty = SourceDeps mempty mempty
 
 addFloatReq :: FloatSource -> SourceDeps -> SourceDeps
-addFloatReq source (f, s) = (source `Set.insert` f, s)
+addFloatReq source x = x { floatDeps = source `Set.insert` floatDeps x}
 
 addStringReq :: StringSource -> SourceDeps -> SourceDeps
-addStringReq source (f, s) = (f, source `Set.insert` s)
+addStringReq source x = x { stringDeps = source `Set.insert` stringDeps x}
 
 newtype SourceDepArr a b = SourceDepArr {
   runSourceDepArr' :: Maybe Int -> SourceDeps -> SourceDeps
@@ -49,9 +66,9 @@ getSourceDependencies :: WithSource a -> SourceDeps
 getSourceDependencies (WithSource a) = runSourceDepArr a mempty
 
 defaultValues :: SourceDeps -> SourceValues
-defaultValues (floatDeps, stringDeps) = SourceValues {
-    floatValues = toMap floatDeps 0,
-    stringValues = toMap stringDeps ""
+defaultValues x = SourceValues {
+    floatValues = toMap (floatDeps x) 0,
+    stringValues = toMap (stringDeps x) ""
 }
   where
       toMap deps defVal = Map.fromList $ map (,defVal) $ Set.toList deps

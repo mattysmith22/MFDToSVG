@@ -2,12 +2,14 @@
 Module      : Arma.Config
 Description : Arma Config types and utilities for reading from arma values
 -}
+{-# LANGUAGE RecordWildCards #-}
 module Arma.Config where
 
 import           Arma.Value
 import           Data.Map                      as Map
 import           Data.Map                       ( Map )
 import           Data.Text                      ( Text )
+import Data.Aeson
 
 -- | Single level of a config
 data Config = Config
@@ -15,6 +17,9 @@ data Config = Config
   , subClasses :: [(Text, Config)]
   }
   deriving (Show, Eq)
+
+instance ToJSON Config where
+  toJSON Config{..} = toJSON $ (toJSON <$> Map.fromList properties) <> (toJSON <$> Map.fromList subClasses)
 
 -- | Error that can occur when reading a config from an Arma value
 data ConfigError = InvalidConfigType
