@@ -94,17 +94,32 @@ main = do
 setup :: ProcessingContext -> UnProcessed MFD -> Window -> UI ()
 setup processCtx mfd w = mdo
     let deps = getSourceDependencies $ process processCtx mfd
-    ticketingUrl <- loadFile "application/octet-stream" "/home/mbs/Downloads/ticketing/ticketing/TICKETING/Ticketing.ttf"
+    ticketingUrl <- loadFile "application/octet-stream" "Ticketing.ttf"
+    bmkApacheFontUrl <- loadFile "application/octet-stream" "Ticketing.ttf"
 
     let drawConf = DrawContext
             { mfdSize = V2 500 500
-            , armaFontMappings = Map.fromList [("fza_ticketing", "Ticketing")]
-            , newFontMappings = [("Ticketing", [(T.pack ticketingUrl, "truetype")])]
+            , armaFontMappings = Map.fromList [("fza_ticketing", "Ticketing"), ("fza_BMKApacheFont", "BMKApacheFont")]
+            , armaFontScalings = Map.fromList
+                [ ("fza_ticketing", FontScaling
+                    { fontScaleVertical = 1
+                    , fontScaleHorizontal = 1
+                    , fontScaleStartOffset = V2 0.3 0.15
+                    }
+                  )
+                , ("fza_BMKApacheFont", FontScaling
+                    { fontScaleVertical = 1.8
+                    , fontScaleHorizontal = 1.8
+                    , fontScaleStartOffset = V2 0 0
+                    }
+                  )
+                ]
+            , newFontMappings = [("Ticketing", [(T.pack ticketingUrl, "truetype")]), ("BMKApacheFont", [(T.pack bmkApacheFontUrl, "truetype")])]
             }
     (elemt, initSrc, srcChangeEvt, hookup) <- setupDeps deps beh
     beh <- accumB initSrc srcChangeEvt
     _ <- getBody w #+ [UI.table #+ [UI.tr #+
-            [UI.td #+ [UI.div # set UI.id_ "result"]
+            [UI.td #+ [UI.div # set UI.id_ "result", UI.button # set UI.id_ "saveButton" #+ [string "Save"] # set UI.href ""]
             , elemt]]]
 
     hookup
@@ -119,7 +134,7 @@ setup processCtx mfd w = mdo
     return ()
 
 setResult :: String -> JSFunction ()
-setResult = ffi "document.getElementById(\"result\").innerHTML = %1"
+setResult = ffi "document.getElementById(\"result\").innerHTML = %1;download = document.getElementById(\"saveButton\");download.setAttribute(\"href\", URL.createObjectURL(new Blob([%1], {type: \"image/svg+xml\"})));download.setAttribute('download','mpd.svg');download.click()"
 
 promoteUp :: (a -> b) -> (a -> b -> a) -> Event (b -> b) -> Event (a -> a)
 promoteUp getter setter = fmap (\f x -> setter x (f $ getter x))

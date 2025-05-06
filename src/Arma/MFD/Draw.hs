@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections, RecordWildCards, Rank2Types #-}
-module Arma.MFD.Draw (drawMFD, DrawContext(..)) where
+module Arma.MFD.Draw (drawMFD, DrawContext(..), FontScaling(..)) where
 
 import           Arma.MFD.Sources.With
 import           Arma.MFD
@@ -45,7 +45,14 @@ fresh = Fresh $ \i -> (i+1, i)
 data DrawContext = DrawContext
     { mfdSize :: V2 Double
     , armaFontMappings :: Map Text Text
+    , armaFontScalings :: Map Text FontScaling
     , newFontMappings :: [(Text, [(Text, Text)])]
+    }
+
+data FontScaling = FontScaling
+    { fontScaleVertical :: Double
+    , fontScaleHorizontal :: Double
+    , fontScaleStartOffset :: V2 Double
     }
 
 col :: RawColor -> Text
@@ -69,9 +76,6 @@ path' (m:ls) = mA' m <> foldMap lA' ls
 strokeWidthFudgeFactor :: Double 
 strokeWidthFudgeFactor = 0.001
 
-textDrawFudgeFactor :: V2 Double 
-textDrawFudgeFactor = V2 0.3 0.15
-
 drawElement :: DrawContext -> Text -> RawColor -> Processed MFDElement -> Fresh Element
 drawElement ctx _ c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mfdElementName] $
         foldMap toLine $ filter ((> 1) . length) mfdElementPoints
@@ -82,8 +86,8 @@ drawElement ctx _ c MFDElementLine{..} = pure $ g_ [makeAttribute "data-name" mf
         toLine points = path_ [Stroke_width_ <<- T.pack (show strokeWidth), Stroke_ <<- col c, Fill_ <<- "transparent", D_ <<- path' points]
 -- TODO: Draw text
 drawElement DrawContext{..} font c MFDElementText{..} = let
-        height = norm (mfdElementTextPos ^-^ mfdElementTextDown)
-        widthVec = norm (mfdElementTextPos ^-^ mfdElementTextRight)
+        height = norm (mfdElementTextPos ^-^ mfdElementTextDown) * fontScaleVertical
+        widthVec = norm (mfdElementTextPos ^-^ mfdElementTextRight) * fontScaleHorizontal
         aspect = widthVec / height
         dim = T.pack (show height) <> "px"
 
@@ -97,11 +101,15 @@ drawElement DrawContext{..} font c MFDElementText{..} = let
             TextAlignCenter -> V2 0 1
             TextAlignRight -> V2 0 1
 
-        fudge = textDrawFudgeFactor `mulBy` (fudgeMultiplier ^* height)
+        fudge = fontScaleStartOffset `mulBy` (fudgeMultiplier ^* height)
 
         fontName = fromMaybe font $ Map.lookup font armaFontMappings
 
         transform = "scale(" <> T.pack (show aspect) <> ", 1)"
+
+        FontScaling{..}
+            = fromMaybe (error $ "Need font scale information for the font " <> T.unpack font)
+            $ Map.lookup font armaFontScalings
 
         --The "scale() transform also affects the coordinate, so we need to counteract that"
         finalPos = mulBy (V2 (recip aspect) 1) $ mfdElementTextPos + fudge
