@@ -13,6 +13,7 @@ import           Control.Category
 import           Prelude hiding ((.))
 import           Arma.MFD.Sources.With
 import           Data.Bool (bool)
+import Data.Fixed
 import Arma.MFD.Sources.Values (SourceValues)
 import Vec (clamp)
 
@@ -27,6 +28,7 @@ performBinOp OpMore l r = if l > r then 1 else 0
 performBinOp OpMoreEq l r = if l >= r then 1 else 0
 performBinOp OpMin l r = l `min` r
 performBinOp OpMax l r = l `max` r
+performBinOp OpMod l r = mod' l r
 
 degToRad :: ArmaNumber -> ArmaNumber
 degToRad x = x * pi / 180
@@ -39,6 +41,9 @@ performUnOp OpNeg = negate
 performUnOp OpDeg = radToDeg
 performUnOp OpRad = degToRad
 performUnOp OpAbs = abs
+performUnOp OpSin = sin . degToRad
+performUnOp OpCos  = cos . degToRad
+performUnOp OpFloor = fromInteger . floor
 
 -- r = x * (to - from) + from
 -- r - from = x * (to - from)

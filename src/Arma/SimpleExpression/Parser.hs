@@ -31,16 +31,19 @@ tok = CL.lexeme C.space
 symbol :: Text -> Parsec Void Text Text
 symbol = CL.symbol C.space
 
+-- We are also parsing strings, that would generally be evaluated by SQF, using
+-- this simple expression parser. This is a superset of Simple Expression
+-- operators, meaning that some SQF commands are also in here
 exprP :: Parsec Void Text SimpleExpression
 exprP = makeExprParser
   termP
   [ [Prefix (UnOp OpNeg <$ symbol "-")]
-  , [Prefix (UnOp OpDeg <$ symbol "deg"), Prefix (UnOp OpRad <$ symbol "rad")]
+  , [Prefix (UnOp OpDeg <$ symbol "deg"), Prefix (UnOp OpRad <$ symbol "rad"), Prefix (UnOp OpSin <$ symbol "sin"), Prefix (UnOp OpCos <$ symbol "cos"), Prefix (UnOp OpFloor <$ symbol "floor")]
   , [InfixL (BinOp OpMul <$ symbol "*"), InfixL (BinOp OpDiv <$ symbol "/")]
   , [InfixL (BinOp OpAdd <$ symbol "+"), InfixL (BinOp OpSub <$ symbol "-")]
   , [InfixN (BinOp OpLess <$ symbol "<"), InfixL (BinOp OpMore <$ symbol ">"), InfixN (BinOp OpLessEq <$ symbol "<="), InfixL (BinOp OpMoreEq <$ symbol ">=")]
   , [Prefix (UnOp OpAbs <$ symbol "abs")]
-  , [InfixL (BinOp OpMin <$ symbol "min"), InfixL (BinOp OpMin <$ symbol "max")]
+  , [InfixL (BinOp OpMin <$ symbol "min"), InfixL (BinOp OpMin <$ symbol "max"), InfixL (BinOp OpMod <$ symbol "mod")]
   , [ Postfix (Factor <$> (symbol "factor" *> symbol "[" *> num) <*> (symbol "," *> num <* symbol "]"))
     , Postfix (Interpolate <$> (symbol "interpolate" *> symbol "[" *> num) <*> (symbol "," *> num) <*> (symbol "," *> num) <*> (symbol "," *> num <* symbol "]"))
     ]

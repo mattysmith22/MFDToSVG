@@ -22,12 +22,16 @@ data BinOp
     | OpMin
     | OpMax
     | OpMore
+    | OpMod
     deriving (Show, Eq)
 
 data UnOp = OpNeg
   | OpDeg
   | OpRad
   | OpAbs
+  | OpSin
+  | OpCos
+  | OpFloor
   deriving (Show, Eq)
 
 -- | AST representing a simple expression
